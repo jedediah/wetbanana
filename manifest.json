@@ -1,0 +1,21 @@
+{
+  "name": "Wet Banana",
+  "version": "0.1.2",
+  "description": "Slip 'n' slide in any direction by clicking and dragging",
+  "icons": { "128": "icon128.png",
+             "48":  "icon48.png" ,
+             "32":  "icon32.png" ,
+             "16":  "icon16.png" },
+
+  "content_scripts": [
+    { "matches": ["http://*/*"],
+      "js": ["content.js"],
+      "all_frames": true,
+      "run_at": "document_end"
+    }
+  ],
+
+  "background_page": "background.html",
+  "options_page": "options.html",
+  "permissions": ["tabs"]
+}

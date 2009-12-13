@@ -1,0 +1,164 @@
+
+<html>
+  <head>
+    <title>Wet Banana</title>
+
+    <style>
+      body {
+        font-family: sans-serif;
+        background-image: url("banana.jpg");
+        background-repeat: no-repeat;
+        background-position: center 250px;
+      }
+
+      h2 { margin: 0 }
+
+      sub { font-style: italic }
+    </style>
+
+    <script type="text/javascript">
+
+      var KEYS = ["shift","ctrl","alt","meta"]
+
+      function $(id) { return document.getElementById(id) }
+
+      function error(msg) {
+        $('message').innerHTML = '<span style="color:red">'+msg+'</span>'
+      }
+
+      function save() {
+        var x
+        var o = {}        
+
+        x = $('button').selectedIndex
+        if (x < 0 || x > 2) {
+          error("Somehow, you broke the button field")
+          return
+        }
+        o.button = x
+
+        x = $('scaling').value-0
+        if (isNaN(x)) {
+          error("Scaling must be a number")
+          return
+        }
+        o.scaling = x
+
+        x = $('speed').value-0
+        if (isNaN(x) || x < 0) {
+          error("Top speed must be a positive number or zero")
+          return
+        }
+        o.speed = x
+
+        x = $('friction').value-0
+        if (isNaN(x) || x < 0) {
+          error("Friction must be a positive number")
+          return
+        }
+        o.friction = x
+
+        for (var i = 0; i < KEYS.length; i++) {
+          localStorage['key_'+KEYS[i]] = $('key_'+KEYS[i]).checked
+        }
+
+        chrome.extension.getBackgroundPage().saveOptions(o)
+
+        $('message').innerHTML = '<span style="color: green">saved</span>'
+      }
+
+      function load() {
+        var o = chrome.extension.getBackgroundPage().loadOptions()
+
+        $('button').selectedIndex = o.button
+
+        $('scaling').value  = o.scaling
+        $('speed').value    = o.speed
+        $('friction').value = o.friction
+
+        for (var i = 0; i < KEYS.length; i++) {
+          $('key_'+KEYS[i]).checked = (o['key_'+KEYS[i]]+"" == "true")
+        }
+      }
+
+    </script>
+
+  </head>
+  <body onload="load()">
+    <center>
+      <table border="0" cellspacing="16" style="width:600px">
+
+        <tr>
+          <td align="right">
+            <h2>Button</h2>
+            Which button will you hold down to drag?
+          </td>
+          <td style="width:300px">
+            <select id="button">
+              <option>Left</option>
+              <option>Middle</option>
+              <option>Right</option>
+            </select>
+          </td>
+        </tr>
+
+        <tr>
+          <td align="right">
+           <h2>Keys</h2>
+           Which extra keys will you hold down?
+          </td>
+          <td>
+            <table border="0">
+            <tr>
+              <td style="width:100px">
+                  <input id="key_shift" type="checkbox" /> <label for="key_shift">Shift</label></td>
+              <td><input id="key_ctrl"  type="checkbox" /> <label for="key_ctrl">Ctrl</label></td>
+            </tr>
+            <tr>
+              <td><input id="key_alt"   type="checkbox" /> <label for="key_alt">Alt</label></td>
+              <td><input id="key_meta"  type="checkbox" /> <label for="key_meta">Meta/Win/Tux</label></td>
+            </tr>
+            </table>
+          </td>
+        </tr>
+
+        <tr>
+          <td align="right">
+            <h2>Scaling</h2>
+            Mouse motion will be magnified by this factor.
+          </td>
+          <td>
+            <input id="scaling" type="text" style="width:60px" /> <sub>screen pixels for every mouse pixel</sub>
+          </td>
+        </tr>
+
+        <tr>
+          <td align="right">
+            <h2>Top Speed</h2>
+            The maximum speed at which the page will glide after you release it. Enter 0 to disable gliding.
+          </td>
+          <td>
+            <input id="speed" type="text" style="width:60px" /> <sub>pixels per second</sub>
+          </td>
+        </tr>
+
+        <tr>
+          <td align="right">
+            <h2>Friction</h2>
+            How quickly the page will come to a stop when gliding.
+          </td>
+          <td>
+            <input id="friction" type="text" style="width:60px" /> <sub>velocities per second</sub>
+          </td>
+        </tr>
+
+        <tr>
+          <td align="right" id="message"></td>
+          <td><input id="save" type="button" value="Save" onclick="save()" /></td>
+        </tr>
+
+      </table>
+    </center>
+  </body>
+</html>
+      
