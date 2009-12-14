@@ -1,7 +1,7 @@
 {
   "name": "Wet Banana",
-  "version": "0.1.2",
-  "description": "Slip 'n' slide in any direction by clicking and dragging",
+  "version": "0.2",
+  "description": "Click and drag the page, with physics",
   "icons": { "128": "icon128.png",
              "48":  "icon48.png" ,
              "32":  "icon32.png" ,

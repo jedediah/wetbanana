@@ -10,16 +10,6 @@ port.onMessage.addListener(function(msg) {
 
 WetBanana = (function() {
 
-  function mpcall(f) {
-    return function() {
-      try {
-        f.apply(this,arguments)
-      } catch(ex) {
-        alert(""+ex)
-      }
-    }
-  }
-
   function vadd(a,b)   { return [a[0]+b[0], a[1]+b[1]] }
   function vsub(a,b)   { return [a[0]-b[0], a[1]-b[1]] }
   function vmul(s,v)   { return [s*v[0], s*v[1]] }
@@ -31,6 +21,9 @@ WetBanana = (function() {
   const TIME_STEP = 0
   const MIN_SPEED_SQUARED =   1
   const FILTER_INTERVAL = 200
+
+  // Don't drag when left-clicking on these elements
+  const OVERRIDE_TAGS = ['A','INPUT','SELECT','TEXTAREA','BUTTON','LABEL']
   
   var dragging = false
   var dragged = false
@@ -153,12 +146,24 @@ WetBanana = (function() {
   function onMouseDown(ev) {
     stopMotion()
     if (ev.button == options.button) {
-      for (var i = 0; i < KEYS.length; i++) {
-        if (options['key_'+KEYS[i]]+'' == 'true' && !ev[KEYS[i]+"Key"]) return;
+      
+      if (!KEYS.every(function(key) {
+        return (options['key_'+key]+'' == 'true') == ev[key+"Key"]
+      })) {
+        console.log("cancelling drag due to failed modkey match")
+        return
       }
+
+      if (ev.button == 0 &&
+          ev.target &&
+          OVERRIDE_TAGS.some(function(tag) { return tag == ev.target.tagName })) {
+        console.log("cancelling drag due to overriding tag "+ev.target.tagName)
+        return
+      }
+      
       startDrag(ev)
       ev.preventDefault()
-      ev.stopPropagation()
+      // ev.stopPropagation()
     }
   }
 
@@ -177,7 +182,7 @@ WetBanana = (function() {
     if (dragging && ev.button == options.button) stopDrag(ev)
     if (dragged) {
       ev.preventDefault()
-      ev.stopPropagation()
+      // ev.stopPropagation()
     }
   }
 

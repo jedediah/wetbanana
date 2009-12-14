@@ -6,8 +6,8 @@ defaultOptions = { "button":    1,
                    "key_alt":   false,
                    "key_meta":  false,
                    "scaling":   1,
-                   "speed":     4000,
-                   "friction":  20
+                   "speed":     6000,
+                   "friction":  5
                  }
 
 for (var k in defaultOptions)
@@ -43,5 +43,16 @@ function saveOptions(o) {
     clients[id].postMessage({ saveOptions: localStorage })
   }
 }
+
+// Inject content script into all existing tabs (doesn't work)
+/*
+chrome.windows.getAll({populate:true}, function(wins) {
+  wins.forEach(function(win) {
+    win.tabs.forEach(function(tab) {
+      chrome.tabs.executeScript(tab.id,{file:"content.js",allFrames:true});
+    })
+  })
+})
+*/
 
 </script></head><body></body></html>

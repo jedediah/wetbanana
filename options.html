@@ -8,14 +8,18 @@
         font-family: sans-serif;
         background-image: url("banana.jpg");
         background-repeat: no-repeat;
-        background-position: center 250px;
+        background-position: center 350px;
       }
 
       h2 { margin: 0 }
 
+      div.backtotop { margin-top: 400px; }
+      
       sub { font-style: italic }
     </style>
 
+    <script src="content.js" type="text/javascript"></script>
+    
     <script type="text/javascript">
 
       var KEYS = ["shift","ctrl","alt","meta"]
@@ -81,11 +85,14 @@
         }
       }
 
+      function scrollToTop() { window.scrollTo(0,0) }
+
     </script>
 
   </head>
   <body onload="load()">
     <center>
+      <a name="top"></a>
       <table border="0" cellspacing="16" style="width:600px">
 
         <tr>
@@ -119,6 +126,7 @@
               <td><input id="key_meta"  type="checkbox" /> <label for="key_meta">Meta/Win/Tux</label></td>
             </tr>
             </table>
+            <div style="width:200px"><sub>Tip: any unchecked keys will <strong>disable</strong> dragging when held down</sub></div>
           </td>
         </tr>
 
@@ -158,6 +166,29 @@
         </tr>
 
       </table>
+
+      <p>
+        Wet Banana by Jedediah Smith -
+        <a href="http://github.com/jedediah/wetbanana">Code</a> -
+        <a href="http://github.com/jedediah/wetbanana/issues">Support</a>
+      </p>
+      
+      <i>Test your settings by dragging this page</i><br/>
+      <img src="down.png" align="absmiddle"/>
+      
+      
+      <div class="backtotop"><a class="backtotop" href="javascript:scrollToTop()"><img src="up.png" align="absmiddle"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a class="backtotop" href="javascript:scrollToTop()"><img src="up.png" align="absmiddle"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a class="backtotop" href="javascript:scrollToTop()"><img src="up.png" align="absmiddle"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a class="backtotop" href="javascript:scrollToTop()"><img src="up.png" align="absmiddle"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a class="backtotop" href="javascript:scrollToTop()"><img src="up.png" align="absmiddle"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a class="backtotop" href="javascript:scrollToTop()"><img src="up.png" align="absmiddle"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a class="backtotop" href="javascript:scrollToTop()"><img src="up.png" align="absmiddle"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a class="backtotop" href="javascript:scrollToTop()"><img src="up.png" align="absmiddle"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a class="backtotop" href="javascript:scrollToTop()"><img src="up.png" align="absmiddle"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a class="backtotop" href="javascript:scrollToTop()"><img src="up.png" align="absmiddle"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a class="backtotop" href="javascript:scrollToTop()"><img src="up.png" align="absmiddle"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a class="backtotop" href="javascript:scrollToTop()"><img src="up.png" align="absmiddle"/><br/><br/>Back to the Top</a></div>
     </center>
   </body>
 </html>
