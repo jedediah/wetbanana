@@ -1,6 +1,6 @@
 {
   "name": "Wet Banana",
-  "version": "0.2",
+  "version": "0.2.1",
   "description": "Click and drag the page, with physics",
   "icons": { "128": "icon128.png",
              "48":  "icon48.png" ,
@@ -8,7 +8,9 @@
              "16":  "icon16.png" },
 
   "content_scripts": [
-    { "matches": ["http://*/*"],
+    { "matches": ["http://*/*",
+                  "https://*/*",
+                  "file:///*"],
       "js": ["content.js"],
       "all_frames": true,
       "run_at": "document_end"
