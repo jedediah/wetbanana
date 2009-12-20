@@ -154,8 +154,7 @@ WetBanana = (function() {
         return
       }
 
-      if (ev.button == 0 &&
-          ev.target &&
+      if (ev.target &&
           OVERRIDE_TAGS.some(function(tag) { return tag == ev.target.tagName })) {
         console.log("cancelling drag due to overriding tag "+ev.target.tagName)
         return
