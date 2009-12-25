@@ -8,7 +8,7 @@
         font-family: sans-serif;
         background-image: url("banana.jpg");
         background-repeat: no-repeat;
-        background-position: center 350px;
+        background-position: center 400px;
       }
 
       h2 { margin: 0 }
@@ -63,8 +63,10 @@
         o.friction = x
 
         for (var i = 0; i < KEYS.length; i++) {
-          localStorage['key_'+KEYS[i]] = $('key_'+KEYS[i]).checked
+          o['key_'+KEYS[i]] = $('key_'+KEYS[i]).checked
         }
+
+        o.debug = $('debug').checked
 
         chrome.extension.getBackgroundPage().saveOptions(o)
 
@@ -76,13 +78,15 @@
 
         $('button').selectedIndex = o.button
 
+        for (var i = 0; i < KEYS.length; i++) {
+          $('key_'+KEYS[i]).checked = (o['key_'+KEYS[i]]+"" == "true")
+        }
+
         $('scaling').value  = o.scaling
         $('speed').value    = o.speed
         $('friction').value = o.friction
 
-        for (var i = 0; i < KEYS.length; i++) {
-          $('key_'+KEYS[i]).checked = (o['key_'+KEYS[i]]+"" == "true")
-        }
+        $('debug').checked = (o.debug == "true")
       }
 
       function scrollToTop() { window.scrollTo(0,0) }
@@ -158,6 +162,11 @@
           <td>
             <input id="friction" type="text" style="width:60px" /> <sub>velocities per second</sub>
           </td>
+        </tr>
+
+        <tr>
+          <td></td>
+          <td><input id="debug" type="checkbox" /> <label for="debug">show debug noise in console</label></td>
         </tr>
 
         <tr>

@@ -1,15 +1,50 @@
 
-var KEYS = ["shift","ctrl","alt","meta"]
-
-var port = chrome.extension.connect()
-port.onMessage.addListener(function(msg) {
-  if (msg.saveOptions) {
-    options = msg.saveOptions
-  }
-})
 
 WetBanana = (function() {
 
+  // === Debuggering ===
+
+  function debug() {
+    if (options.debug) {
+      console.debug.apply(console,["WB:"].concat(Array.prototype.slice.call(arguments)))
+    }
+  }
+
+  const DEBUG_INTERVAL = 200
+  var lastDebug = 0
+  
+  function debugCont() {
+    if (options.debug) {
+      var now = Date.now()
+      if (lastDebug+DEBUG_INTERVAL <= now) {
+        lastDebug = now
+        debug.apply(this,arguments)
+      }
+    }
+  }
+
+
+  // === Util ===
+
+  String.prototype.padLeft = function(n,c) {
+    if (!c) c = ' '
+    var a = []
+    for (var i = this.length; i < n; i++) a.push(c)
+    a.push(this)
+    return a.join('')
+  }
+  
+  function formatCoord(n) {
+    return new Number(n).toFixed(3).padLeft(8)
+  }
+  
+  function formatVector(v) {
+    return "["+formatCoord(v[0])+","+formatCoord(v[1])+"]"
+  }
+
+  
+  // === Vector math ===
+  
   function vadd(a,b)   { return [a[0]+b[0], a[1]+b[1]] }
   function vsub(a,b)   { return [a[0]-b[0], a[1]-b[1]] }
   function vmul(s,v)   { return [s*v[0], s*v[1]] }
@@ -17,18 +52,50 @@ WetBanana = (function() {
   function vmag2(v)    { return v[0]*v[0] + v[1]*v[1] }
   function vmag(v)     { return Math.sqrt(v[0]*v[0] + v[1]*v[1]) }
   function vunit(v)    { return vdiv(vmag(v),v) }
+
   
+  // === DOM fun ===
+
+  // Can the given element be scrolled on either axis?
+  // That is, is the scroll size greater than the client size
+  // and the CSS overflow set to scroll or auto?
+  function isScrollable(e) {
+    var o
+    if (e.scrollWidth > e.clientWidth) {
+      o = document.defaultView.getComputedStyle(e)["overflow-x"]
+      if (o == "auto" || o == "scroll" || e == document.body) return true
+    }      
+    if (e.scrollHeight > e.clientHeight) {
+      o = document.defaultView.getComputedStyle(e)["overflow-y"]
+      if (o == "auto" || o == "scroll" || e == document.body) return true
+    }
+    return false
+  }
+
+  // Return the first ancestor (or the element itself) that is scrollable
+  function findInnermostScrollable(e) {
+    if (e == null || isScrollable(e)) {
+      return e
+    } else {
+      return arguments.callee(e.parentNode)
+    }
+  }
+  
+  var KEYS = ["shift","ctrl","alt","meta"]
   const TIME_STEP = 0
   const MIN_SPEED_SQUARED =   1
   const FILTER_INTERVAL = 200
 
   // Don't drag when left-clicking on these elements
   const OVERRIDE_TAGS = ['A','INPUT','SELECT','TEXTAREA','BUTTON','LABEL']
+
+  var options = null
   
   var dragging = false
   var dragged = false
+  var dragElement = null
   var mouseOrigin = null
-  var windowOrigin = null
+  var scrollOrigin = null
   var timeoutId = null
 
   var position = null
@@ -39,6 +106,15 @@ WetBanana = (function() {
   var velocity = [0,0]
 
   var scrolling = false
+
+  var port = chrome.extension.connect()
+  port.onMessage.addListener(function(msg) {
+    if (msg.saveOptions) {
+      options = msg.saveOptions
+      options.debug = (options.debug == "true")
+      debug("saveOptions: ",options)
+    }
+  })
 
   function clampVelocity() {
     var speedSquared = vmag2(velocity)
@@ -53,7 +129,7 @@ WetBanana = (function() {
 
   function resetMotion(ev) {
     mouseOrigin = [ev.clientX, ev.clientY]
-    windowOrigin = [window.pageXOffset, window.pageYOffset]
+    scrollOrigin = [dragElement.scrollLeft, dragElement.scrollTop]
     events = [ev]
   }
 
@@ -100,19 +176,28 @@ WetBanana = (function() {
 
   function updateScrollPosition() {
     scrolling = true
-    window.scrollTo(windowOrigin[0] - (position[0] - mouseOrigin[0])*options.scaling,
-                    windowOrigin[1] - (position[1] - mouseOrigin[1])*options.scaling)
+    var x = dragElement.scrollLeft = Math.round(scrollOrigin[0] - (position[0] - mouseOrigin[0])*options.scaling)
+    var y = dragElement.scrollTop  = Math.round(scrollOrigin[1] - (position[1] - mouseOrigin[1])*options.scaling)
     scrolling = false
+    return x == dragElement.scrollLeft ||
+           y == dragElement.scrollTop
   }
   
   function onTimer() {
-    if (updateFreeMotion()) {
-      updateScrollPosition()
+    if (updateFreeMotion() && updateScrollPosition()) {
       timeoutId = window.setTimeout(onTimer,TIME_STEP)
+    } else {
+      if (dragElement) {
+        debug("motion stop")
+        dragElement.removeEventListener("scroll", onScroll, true)
+        dragElement = null
+      }
     }
+    debugCont("onTimer velocity="+formatVector(velocity)+" position="+formatVector(position))
   }
 
   function stopMotion() {
+    debug("stopMotion")
     velocity = [0,0]
     date = null
     if (timeoutId != null) {
@@ -122,18 +207,25 @@ WetBanana = (function() {
   }
   
   function startDrag(ev) {
-    dragging = true
-    dragged = false
-    resetMotion(ev)
-    updateEventFilter(ev)
+    if (dragElement = findInnermostScrollable(ev.target)) {
+      debug("startDrag dragElement="+dragElement.tagName)
+      dragging = true
+      dragged = false
+      resetMotion(ev)
+      updateEventFilter(ev)
 
-    document.body.style.cursor = "move"
-    document.addEventListener("mousemove", onMouseMove, true)
+      dragElement.addEventListener("scroll", onScroll, true)
+      document.addEventListener("mousemove", onMouseMove, true)
+      document.body.style.cursor = "move"
+    } else {
+      debug("no scrollable ancestor for element:",ev.target)
+    }
   }
 
   function stopDrag(ev) {
-    document.removeEventListener("mousemove", onMouseMove, true)
+    debug("stopDrag")
     document.body.style.cursor = "default"
+    document.removeEventListener("mousemove", onMouseMove, true)
 
     updateEventFilter(ev)
     dragging = false
@@ -145,25 +237,23 @@ WetBanana = (function() {
 
   function onMouseDown(ev) {
     stopMotion()
-    if (ev.button == options.button) {
-      
-      if (!KEYS.every(function(key) {
-        return (options['key_'+key]+'' == 'true') == ev[key+"Key"]
-      })) {
-        console.log("cancelling drag due to failed modkey match")
-        return
-      }
-
-      if (ev.target &&
-          OVERRIDE_TAGS.some(function(tag) { return tag == ev.target.tagName })) {
-        console.log("cancelling drag due to overriding tag "+ev.target.tagName)
-        return
-      }
-      
-      startDrag(ev)
-      ev.preventDefault()
-      // ev.stopPropagation()
+    if (ev.button != options.button) {
+      debug("wrong button, ignoring   ev.button="+ev.button+"   options.button="+options.button)
+      return
     }
+      
+    if (!KEYS.every(function(key) { return (options['key_'+key]+'' == 'true') == ev[key+"Key"] })) {
+      debug("wrong modkeys, ignoring")
+      return
+    }
+
+    if (ev.target && OVERRIDE_TAGS.some(function(tag) { return tag == ev.target.tagName })) {
+      debug("forbidden target element, ignoring   ev.target="+ev.target.tagName)
+      return
+    }
+
+    startDrag(ev)
+    ev.preventDefault()
   }
 
   function onMouseMove(ev) {
@@ -189,7 +279,7 @@ WetBanana = (function() {
     if (dragging && ev.toElement == null) stopDrag(ev)
   }
 
-  function onMouseWheel(ev) {
+  function onScroll(ev) {
     if (!scrolling) stopMotion()
   }
   
@@ -198,7 +288,6 @@ WetBanana = (function() {
       document.addEventListener("mousedown",     onMouseDown,  true)
       document.addEventListener("mouseup",       onMouseUp,    true)
       document.addEventListener("mouseout",      onMouseOut,   true)
-      document.addEventListener("scroll",        onMouseWheel, true)
     }
   }
   
