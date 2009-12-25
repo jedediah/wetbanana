@@ -63,18 +63,18 @@ WetBanana = (function() {
     var o
     if (e.scrollWidth > e.clientWidth) {
       o = document.defaultView.getComputedStyle(e)["overflow-x"]
-      if (o == "auto" || o == "scroll" || e == document.body) return true
+      if (o == "auto" || o == "scroll") return true
     }      
     if (e.scrollHeight > e.clientHeight) {
       o = document.defaultView.getComputedStyle(e)["overflow-y"]
-      if (o == "auto" || o == "scroll" || e == document.body) return true
+      if (o == "auto" || o == "scroll") return true
     }
     return false
   }
 
   // Return the first ancestor (or the element itself) that is scrollable
   function findInnermostScrollable(e) {
-    if (e == null || isScrollable(e)) {
+    if (e == null || e == document.body || isScrollable(e)) {
       return e
     } else {
       return arguments.callee(e.parentNode)
@@ -174,26 +174,56 @@ WetBanana = (function() {
     return false
   }
 
+  function setScroll(x,y) {
+    dragElement.scrollLeft = x
+    dragElement.scrollTop  = y
+  }
+
+  function getScroll() {
+    var o = {};
+    ['scrollWidth',
+     'scrollHeight',
+     'scrollTop',
+     'scrollLeft',
+     'clientWidth',
+     'clientHeight'].forEach(function(k) {
+      o[k] = dragElement[k]
+     });
+
+    if (dragElement == document.body) {
+      o.clientHeight = window.innerHeight
+      o.clientWidth  = window.innerWidth
+    }
+
+    return o
+  }
+  
   function updateScrollPosition() {
+    var x =  Math.round(scrollOrigin[0] - (position[0] - mouseOrigin[0])*options.scaling)
+    var y =  Math.round(scrollOrigin[1] - (position[1] - mouseOrigin[1])*options.scaling)
+    var ax, ay
+
     scrolling = true
-    var x = dragElement.scrollLeft = Math.round(scrollOrigin[0] - (position[0] - mouseOrigin[0])*options.scaling)
-    var y = dragElement.scrollTop  = Math.round(scrollOrigin[1] - (position[1] - mouseOrigin[1])*options.scaling)
+    setScroll(x,y)
     scrolling = false
-    return x == dragElement.scrollLeft ||
-           y == dragElement.scrollTop
+
+    s = getScroll()
+    debugCont("updateScrollPosition: try="+x+","+y+" actual="+s.scrollLeft+","+s.scrollTop)
+    return (x >= 0 && x <= s.scrollWidth-s.clientWidth) ||
+           (y >= 0 && y <= s.scrollHeight-s.clientHeight)
   }
   
   function onTimer() {
     if (updateFreeMotion() && updateScrollPosition()) {
       timeoutId = window.setTimeout(onTimer,TIME_STEP)
     } else {
+      debug("motion stop")
       if (dragElement) {
-        debug("motion stop")
         dragElement.removeEventListener("scroll", onScroll, true)
         dragElement = null
       }
     }
-    debugCont("onTimer velocity="+formatVector(velocity)+" position="+formatVector(position))
+    // debugCont("onTimer velocity="+formatVector(velocity)+" position="+formatVector(position))
   }
 
   function stopMotion() {
@@ -280,7 +310,10 @@ WetBanana = (function() {
   }
 
   function onScroll(ev) {
-    if (!scrolling) stopMotion()
+    if (!scrolling) {
+      debug("onScroll: stopping motion")
+      stopMotion()
+    }
   }
   
   return {
