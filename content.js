@@ -87,7 +87,7 @@ WetBanana = (function() {
   const FILTER_INTERVAL = 100
 
   // Don't drag when left-clicking on these elements
-  const OVERRIDE_TAGS = ['A','INPUT','SELECT','TEXTAREA','BUTTON','LABEL']
+  const OVERRIDE_TAGS = ['A','INPUT','SELECT','TEXTAREA','BUTTON','LABEL','OBJECT']
 
   var options = null
   
