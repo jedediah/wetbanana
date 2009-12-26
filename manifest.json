@@ -1,6 +1,6 @@
 {
   "name": "Wet Banana",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Click and drag the page, with physics",
   "icons": { "128": "icon128.png",
              "48":  "icon48.png" ,

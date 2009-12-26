@@ -10,7 +10,7 @@ WetBanana = (function() {
     }
   }
 
-  const DEBUG_INTERVAL = 200
+  const DEBUG_INTERVAL = 100
   var lastDebug = 0
   
   function debugCont() {
@@ -82,9 +82,9 @@ WetBanana = (function() {
   }
   
   var KEYS = ["shift","ctrl","alt","meta"]
-  const TIME_STEP = 0
+  const TIME_STEP = 10
   const MIN_SPEED_SQUARED =   1
-  const FILTER_INTERVAL = 200
+  const FILTER_INTERVAL = 100
 
   // Don't drag when left-clicking on these elements
   const OVERRIDE_TAGS = ['A','INPUT','SELECT','TEXTAREA','BUTTON','LABEL']
@@ -102,7 +102,7 @@ WetBanana = (function() {
   var date = null
 
   // var mousePos = [[0,0],[0,0],[0,0],[0,0]]
-  var events = [];
+  var events = []
   var velocity = [0,0]
 
   var scrolling = false
@@ -111,6 +111,7 @@ WetBanana = (function() {
   port.onMessage.addListener(function(msg) {
     if (msg.saveOptions) {
       options = msg.saveOptions
+      options.cursor = (options.cursor == "true")
       options.debug = (options.debug == "true")
       debug("saveOptions: ",options)
     }
@@ -135,15 +136,17 @@ WetBanana = (function() {
 
   function updateEventFilter(ev) {
     position = [ ev.clientX, ev.clientY ]
-    while (events.length > 0 && (ev.timeStamp - events[0].timeStamp) > FILTER_INTERVAL) {
-      events.shift()
+    if (events) {
+      while (events.length > 0 && (ev.timeStamp - events[0].timeStamp) > FILTER_INTERVAL) {
+        events.shift()
+      }
+      events.push(ev)
     }
-    events.push(ev)
-    return events.length > 1
+    return events && events.length > 1
   }
   
   function sampleMotion(ev) {
-    if (events.length < 2) {
+    if (events == null || events.length < 2) {
       velocity = [0,0]
       return false
     } else {
@@ -180,15 +183,15 @@ WetBanana = (function() {
   }
 
   function getScroll() {
-    var o = {};
-    ['scrollWidth',
-     'scrollHeight',
-     'scrollTop',
-     'scrollLeft',
-     'clientWidth',
-     'clientHeight'].forEach(function(k) {
-      o[k] = dragElement[k]
-     });
+    var o = {}
+    ;['scrollWidth',
+      'scrollHeight',
+      'scrollTop',
+      'scrollLeft',
+      'clientWidth',
+      'clientHeight'].forEach(function(k) {
+        o[k] = dragElement[k]
+      })
 
     if (dragElement == document.body) {
       o.clientHeight = window.innerHeight
@@ -201,14 +204,13 @@ WetBanana = (function() {
   function updateScrollPosition() {
     var x =  Math.round(scrollOrigin[0] - (position[0] - mouseOrigin[0])*options.scaling)
     var y =  Math.round(scrollOrigin[1] - (position[1] - mouseOrigin[1])*options.scaling)
-    var ax, ay
 
     scrolling = true
     setScroll(x,y)
     scrolling = false
 
     s = getScroll()
-    debugCont("updateScrollPosition: try="+x+","+y+" actual="+s.scrollLeft+","+s.scrollTop)
+    debug("updateScrollPosition: try="+x+","+y+" actual="+s.scrollLeft+","+s.scrollTop)
     return (x >= 0 && x <= s.scrollWidth-s.clientWidth) ||
            (y >= 0 && y <= s.scrollHeight-s.clientHeight)
   }
@@ -217,11 +219,7 @@ WetBanana = (function() {
     if (updateFreeMotion() && updateScrollPosition()) {
       timeoutId = window.setTimeout(onTimer,TIME_STEP)
     } else {
-      debug("motion stop")
-      if (dragElement) {
-        dragElement.removeEventListener("scroll", onScroll, true)
-        dragElement = null
-      }
+      stopMotion()
     }
     // debugCont("onTimer velocity="+formatVector(velocity)+" position="+formatVector(position))
   }
@@ -230,6 +228,10 @@ WetBanana = (function() {
     debug("stopMotion")
     velocity = [0,0]
     date = null
+    if (dragElement) {
+      (dragElement == document.body ? document : dragElement).removeEventListener("scroll", onScroll, true)
+      dragElement = null
+    }
     if (timeoutId != null) {
       window.clearTimeout(timeoutId)
       timeoutId = null
@@ -244,9 +246,9 @@ WetBanana = (function() {
       resetMotion(ev)
       updateEventFilter(ev)
 
-      dragElement.addEventListener("scroll", onScroll, true)
+      ;(dragElement == document.body ? document : dragElement).addEventListener("scroll", onScroll, true)
       document.addEventListener("mousemove", onMouseMove, true)
-      document.body.style.cursor = "move"
+      if (options.cursor) document.body.style.cursor = "move"
     } else {
       debug("no scrollable ancestor for element:",ev.target)
     }
@@ -254,15 +256,15 @@ WetBanana = (function() {
 
   function stopDrag(ev) {
     debug("stopDrag")
-    document.body.style.cursor = "default"
+    if (options.cursor) document.body.style.cursor = "default"
     document.removeEventListener("mousemove", onMouseMove, true)
 
     updateEventFilter(ev)
     dragging = false
-
     if (sampleMotion(ev)) {
       timeoutId = window.setTimeout(onTimer,TIME_STEP)
     }
+    events = null
   }
 
   function onMouseDown(ev) {
@@ -287,13 +289,15 @@ WetBanana = (function() {
   }
 
   function onMouseMove(ev) {
-    if (dragging && (options.button == ev.button ||
-                     options.button == 0)) {
-      dragged = true
-      updateEventFilter(ev)
-      updateScrollPosition()
-    } else {
-      stopDrag(ev)
+    if (dragging) {
+      if (options.button == ev.button ||
+          options.button == 0) {
+        dragged = true
+        updateEventFilter(ev)
+        updateScrollPosition()
+      } else {
+        stopDrag(ev)
+      }
     }
   }
 
@@ -301,7 +305,6 @@ WetBanana = (function() {
     if (dragging && ev.button == options.button) stopDrag(ev)
     if (dragged) {
       ev.preventDefault()
-      // ev.stopPropagation()
     }
   }
 

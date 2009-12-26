@@ -8,7 +8,7 @@
         font-family: sans-serif;
         background-image: url("banana.jpg");
         background-repeat: no-repeat;
-        background-position: center 400px;
+        background-position: center 450px;
       }
 
       h2 { margin: 0 }
@@ -66,6 +66,7 @@
           o['key_'+KEYS[i]] = $('key_'+KEYS[i]).checked
         }
 
+        o.cursor = $('cursor').checked
         o.debug = $('debug').checked
 
         chrome.extension.getBackgroundPage().saveOptions(o)
@@ -86,6 +87,7 @@
         $('speed').value    = o.speed
         $('friction').value = o.friction
 
+        $('cursor').checked = (o.cursor == "true")
         $('debug').checked = (o.debug == "true")
       }
 
@@ -131,6 +133,14 @@
             </tr>
             </table>
             <div style="width:200px"><sub>Tip: any unchecked keys will <strong>disable</strong> dragging when held down</sub></div>
+          </td>
+        </tr>
+
+        <tr>
+          <td></td>
+          <td>
+            <input id="cursor" type="checkbox"/> <label for="cursor">change cursor while dragging</label><br/>
+            <sub>Try unchecking this if you notice any delays</sub>
           </td>
         </tr>
 
