@@ -22,76 +22,98 @@
     
     <script type="text/javascript">
 
-      var KEYS = ["shift","ctrl","alt","meta"]
+var KEYS = ["shift","ctrl","alt","meta"]
 
-      function $(id) { return document.getElementById(id) }
+function $(id) { return document.getElementById(id) }
 
-      function error(msg) {
-        $('message').innerHTML = '<span style="color:red">'+msg+'</span>'
-      }
+function error(msg) {
+  $('message').innerHTML += '<div style="color:red">'+msg+'</div>'
+}
 
-      function save() {
-        var x
-        var o = {}        
+function clearMessage() {
+  $('message').innerHTML = ''
+}
 
-        x = $('button').selectedIndex
-        if (x < 0 || x > 2) {
-          error("Somehow, you broke the button field")
-          return
-        }
-        o.button = x
+function save() {
+  var x
+  var o = {}        
 
-        x = $('scaling').value-0
-        if (isNaN(x)) {
-          error("Scaling must be a number")
-          return
-        }
-        o.scaling = x
+  clearMessage()
+  
+  x = $('button').selectedIndex
+  if (x < 0 || x > 2) {
+    error("Somehow, you broke the button field")
+  } else o.button = x
 
-        x = $('speed').value-0
-        if (isNaN(x) || x < 0) {
-          error("Top speed must be a positive number or zero")
-          return
-        }
-        o.speed = x
+  x = $('scaling').value-0
+  if (isNaN(x)) {
+    error("Scaling must be a number")
+  } else o.scaling = x
 
-        x = $('friction').value-0
-        if (isNaN(x) || x < 0) {
-          error("Friction must be a positive number")
-          return
-        }
-        o.friction = x
+  x = $('speed').value-0
+  if (isNaN(x) || x < 0) {
+    error("Top speed must be a positive number or zero")
+  } else o.speed = x
 
-        for (var i = 0; i < KEYS.length; i++) {
-          o['key_'+KEYS[i]] = $('key_'+KEYS[i]).checked
-        }
+  x = $('friction').value-0
+  if (isNaN(x) || x < 0) {
+    error("Friction must be a positive number")
+  } else o.friction = x
 
-        o.cursor = $('cursor').checked
-        o.debug = $('debug').checked
+  for (var i = 0; i < KEYS.length; i++) {
+    o['key_'+KEYS[i]] = $('key_'+KEYS[i]).checked
+  }
 
-        chrome.extension.getBackgroundPage().saveOptions(o)
+  o.cursor = $('cursor').checked
+  o.debug = $('debug').checked
 
-        $('message').innerHTML = '<span style="color: green">saved</span>'
-      }
+  chrome.extension.getBackgroundPage().saveOptions(o)
+}
 
-      function load() {
-        var o = chrome.extension.getBackgroundPage().loadOptions()
+function load() {
+  var o = chrome.extension.getBackgroundPage().loadOptions()
 
-        $('button').selectedIndex = o.button
+  $('button').selectedIndex = o.button
 
-        for (var i = 0; i < KEYS.length; i++) {
-          $('key_'+KEYS[i]).checked = (o['key_'+KEYS[i]]+"" == "true")
-        }
+  for (var i = 0; i < KEYS.length; i++) {
+    $('key_'+KEYS[i]).checked = (o['key_'+KEYS[i]]+"" == "true")
+  }
 
-        $('scaling').value  = o.scaling
-        $('speed').value    = o.speed
-        $('friction').value = o.friction
+  $('scaling').value  = o.scaling
+  $('speed').value    = o.speed
+  $('friction').value = o.friction
 
-        $('cursor').checked = (o.cursor == "true")
-        $('debug').checked = (o.debug == "true")
-      }
+  $('cursor').checked = (o.cursor == "true")
+  $('debug').checked = (o.debug == "true")
+}
 
-      function scrollToTop() { window.scrollTo(0,0) }
+var updateTimeoutId
+
+function onUpdate(ev) {
+  if (updateTimeoutId != null) clearTimeout(updateTimeoutId)
+  updateTimeoutId = setTimeout(save,200)
+}
+
+function scrollToTop() { window.scrollTo(0,0) }
+
+document.addEventListener('load',function(ev) {
+  ['button','cursor','debug'].forEach(function(id) {
+    $(id).addEventListener('change',onUpdate,false)
+  })
+  
+  KEYS.forEach(function(key) {
+    $('key_'+key).addEventListener('change',onUpdate,false)
+  })
+  
+  ;['scaling','speed','friction'].forEach(function(id) {
+    $(id).addEventListener('change',onUpdate,true)
+    $(id).addEventListener('keydown',onUpdate,true)
+    $(id).addEventListener('mousedown',onUpdate,true)
+    $(id).addEventListener('blur',onUpdate,true)
+  })
+},true)
+
+document.addEventListener('unload',save,true)
 
     </script>
 
@@ -147,7 +169,7 @@
         <tr>
           <td align="right">
             <h2>Scaling</h2>
-            Mouse motion will be magnified by this factor.
+            Mouse motion will be magnified by this factor. A negative number will invert scrolling.
           </td>
           <td>
             <input id="scaling" type="text" style="width:60px" /> <sub>screen pixels for every mouse pixel</sub>
@@ -180,8 +202,7 @@
         </tr>
 
         <tr>
-          <td align="right" id="message"></td>
-          <td><input id="save" type="button" value="Save" onclick="save()" /></td>
+          <td colspan="2" id="message" align="center" height="24"></td>
         </tr>
 
       </table>

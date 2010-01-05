@@ -249,8 +249,10 @@ WetBanana = (function() {
       ;(dragElement == document.body ? document : dragElement).addEventListener("scroll", onScroll, true)
       document.addEventListener("mousemove", onMouseMove, true)
       if (options.cursor) document.body.style.cursor = "move"
+      return true
     } else {
       debug("no scrollable ancestor for element:",ev.target)
+      return false
     }
   }
 
@@ -265,6 +267,11 @@ WetBanana = (function() {
       timeoutId = window.setTimeout(onTimer,TIME_STEP)
     }
     events = null
+
+    window.setTimeout(function(){
+      debug("clearing dragged flag")
+      dragged = false
+    },10)
   }
 
   function onMouseDown(ev) {
@@ -284,8 +291,7 @@ WetBanana = (function() {
       return
     }
 
-    startDrag(ev)
-    ev.preventDefault()
+    if (startDrag(ev)) ev.preventDefault()
   }
 
   function onMouseMove(ev) {
@@ -318,12 +324,20 @@ WetBanana = (function() {
       stopMotion()
     }
   }
+
+  function onContextMenu(ev) {
+    debug("onContextMenu dragged="+dragged,ev)
+    if (dragging || dragged) {
+      ev.preventDefault()
+    }
+  }
   
   return {
     init: function() {
-      document.addEventListener("mousedown",     onMouseDown,  true)
-      document.addEventListener("mouseup",       onMouseUp,    true)
-      document.addEventListener("mouseout",      onMouseOut,   true)
+      document.addEventListener("mousedown",     onMouseDown,   true)
+      document.addEventListener("mouseup",       onMouseUp,     true)
+      document.addEventListener("mouseout",      onMouseOut,    true)
+      document.addEventListener("contextmenu",   onContextMenu, true)
     }
   }
   
