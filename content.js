@@ -75,10 +75,12 @@ WetBanana = (function() {
     }
   })()
 
+  // Test if a mouse event occurred over a scrollbar by testing if the
+  // coordinates of the event are outside the target element.
   function isOverScrollbar(ev) {
-    return ev.target == document.documentElement &&
-           (ev.clientX >= document.documentElement.clientWidth ||
-            ev.clientY >= document.documentElement.clientHeight)
+    return ev.target &&
+           ev.offsetX >= ev.target.clientWidth ||
+           ev.offsetY >= ev.target.clientHeight
   }
   
   // Can the given element be scrolled on either axis?
@@ -594,11 +596,11 @@ WetBanana = (function() {
   
   return {
     init: function() {
-      document.addEventListener("mousedown",     onMouseDown,   true)
-      document.addEventListener("mouseup",       onMouseUp,     true)
-      document.addEventListener("mousemove",     onMouseMove,   true)
-      document.addEventListener("mouseout",      onMouseOut,    true)
-      document.addEventListener("contextmenu",   onContextMenu, true)
+      addEventListener("mousedown",     onMouseDown,   true)
+      addEventListener("mouseup",       onMouseUp,     true)
+      addEventListener("mousemove",     onMouseMove,   true)
+      addEventListener("mouseout",      onMouseOut,    true)
+      addEventListener("contextmenu",   onContextMenu, true)
     }
   }
   
