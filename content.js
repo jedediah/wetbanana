@@ -62,6 +62,7 @@ WetBanana = (function() {
       for (var i = 0; i < mommy.childNodes.length; i++) {
         var baby = mommy.childNodes[i]
         if (baby.nodeType == Node.TEXT_NODE && baby.textContent.search(/\S/) != -1) {
+          // debug("TEXT_NODE: '"+baby.textContent+"'")
           try {
             bonet.appendChild(mommy.replaceChild(bonet,baby))
             if (bonet.isSameNode(document.elementFromPoint(ev.clientX,ev.clientY))) return true
@@ -76,11 +77,12 @@ WetBanana = (function() {
   })()
 
   // Test if a mouse event occurred over a scrollbar by testing if the
-  // coordinates of the event are outside the target element.
+  // coordinates of the event are outside the target element. Also test
+  // if the element is inline by checking for zero size.
   function isOverScrollbar(ev) {
     return ev.target &&
-           ev.offsetX >= ev.target.clientWidth ||
-           ev.offsetY >= ev.target.clientHeight
+           ev.target.clientWidth > 0 && ev.target.clientHeight > 0 &&
+           (ev.offsetX >= ev.target.clientWidth || ev.offsetY >= ev.target.clientHeight)
   }
   
   // Can the given element be scrolled on either axis?
@@ -442,7 +444,7 @@ WetBanana = (function() {
       }
 
       if (isOverScrollbar(ev)) {
-        debug("detected scrollbar click, ignoring")
+        debug("detected scrollbar click, ignoring",ev)
         break
       }
 
