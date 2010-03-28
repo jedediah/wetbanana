@@ -1,7 +1,7 @@
 
 <html><head><script type="text/javascript">
 
-defaultOptions = { "button":    1,
+defaultOptions = { "button":    0,
                    "key_shift": false,
                    "key_ctrl":  false,
                    "key_alt":   false,
@@ -29,7 +29,7 @@ clients = {}
 
 chrome.extension.onConnect.addListener(function(port) {
   port.postMessage({ saveOptions: localStorage })
-  var id = port.sender.tab.id
+  var id = port.portId_
   console.log("connect: "+id)
   clients[id] = port
   port.onDisconnect.addListener(function() {

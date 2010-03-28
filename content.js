@@ -1,6 +1,22 @@
 
 WetBanana = (function() {
 
+  // === Options ===
+
+  var options = {debug:true}
+  
+  var port = chrome.extension.connect()
+  port.onMessage.addListener(function(msg) {
+    if (msg.saveOptions) {
+      options = msg.saveOptions
+      options.cursor = (options.cursor == "true")
+      options.notext = (options.notext == "true")
+      options.debug = (options.debug == "true")
+      debug("saveOptions: ",options)
+    }
+  })
+
+
   // === Debuggering ===
 
   function debug() {
@@ -22,7 +38,7 @@ WetBanana = (function() {
     }
   }
 
-
+  
   // === Util ===
 
   String.prototype.padLeft = function(n,c) {
@@ -76,13 +92,24 @@ WetBanana = (function() {
     }
   })()
 
+
+  /*
+  large <html>.clientHeight:
+    http://www.artima.com/scalazine/articles/twitter_on_scala.html
+
+  small <html>.clientHeight:
+    http://highscalability.com/scaling-twitter-making-twitter-10000-percent-faster
+  */
+  
   // Test if a mouse event occurred over a scrollbar by testing if the
   // coordinates of the event are outside the target element. Also test
   // if the element is inline by checking for zero size.
   function isOverScrollbar(ev) {
-    return ev.target &&
-           ev.target.clientWidth > 0 && ev.target.clientHeight > 0 &&
-           (ev.offsetX >= ev.target.clientWidth || ev.offsetY >= ev.target.clientHeight)
+    var t = ev.target == document.documentElement ? document.body : ev.target
+    return t &&
+           t.clientWidth > 0 && t.clientHeight > 0 &&
+           (ev.offsetX-t.scrollLeft >= t.clientWidth ||
+            ev.offsetY-t.scrollTop  >= t.clientHeight)
   }
   
   // Can the given element be scrolled on either axis?
@@ -181,24 +208,6 @@ WetBanana = (function() {
              cancel: cancel,
              scroll: scroll }
   })()
-
-  
-  
-  var KEYS = ["shift","ctrl","alt","meta"]
-  const TIME_STEP = 10
-
-  var options = null
-
-  var port = chrome.extension.connect()
-  port.onMessage.addListener(function(msg) {
-    if (msg.saveOptions) {
-      options = msg.saveOptions
-      options.cursor = (options.cursor == "true")
-      options.notext = (options.notext == "true")
-      options.debug = (options.debug == "true")
-      debug("saveOptions: ",options)
-    }
-  })
 
 
   // === Motion ===
@@ -358,12 +367,15 @@ WetBanana = (function() {
   
 
   const LBUTTON=0, MBUTTON=1, RBUTTON=2
+  const KEYS = ["shift","ctrl","alt","meta"]
+  const TIME_STEP = 10
   
   const STOP=0, CLICK=1, DRAG=2, GLIDE=3
   const ACTIVITIES = ["STOP","CLICK","DRAG","GLIDE"]
   for (var i = 0; i < ACTIVITIES.length; i++) window[ACTIVITIES[i]] = i
 
   var activity = STOP
+  var blockContextMenu = false
   var mouseOrigin = null
   var dragElement = null
 
@@ -416,6 +428,8 @@ WetBanana = (function() {
   }
   
   function onMouseDown(ev) {
+    blockContextMenu = false
+    
     switch (activity) {
       
     case GLIDE:
@@ -459,7 +473,7 @@ WetBanana = (function() {
         break
       }
 
-      debug("click")
+      debug("click MouseEvent=",ev," dragElement=",dragElement)
       activity = CLICK
       mouseOrigin = [ev.clientX,ev.clientY]
       Motion.impulse(mouseOrigin,ev.timeStamp)
@@ -480,6 +494,7 @@ WetBanana = (function() {
 
     case CLICK:
       if (ev.button == options.button) {
+        if (options.button == RBUTTON) blockContextMenu = true
         startDrag(ev)
         ev.preventDefault()
       }
@@ -577,22 +592,10 @@ WetBanana = (function() {
   Scroll.listen(onScroll)
 
   function onContextMenu(ev) {
-    switch (activity) {
-
-    case STOP: break
-
-    case CLICK:
-    case DRAG:
-      if (options.button == RBUTTON) {
-        ev.preventDefault()
-      }
-      break
-
-    case GLIDE: break
-
-    default:
-      debug("WARNING: unknown state: "+activity)
-      break
+    if (blockContextMenu) {
+      blockContextMenu = false
+      debug("blocking context menu")
+      ev.preventDefault()
     }
   }
   
