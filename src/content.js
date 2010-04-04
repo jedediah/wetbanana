@@ -137,7 +137,7 @@ WetBanana = (function() {
       return arguments.callee(e.parentNode)
     }
   }
-
+  
   // Don't drag when left-clicking on these elements
   const OVERRIDE_TAGS = ['A','INPUT','SELECT','TEXTAREA','BUTTON','LABEL','OBJECT','EMBED']
   function hasOverrideAncestor(e) {
@@ -145,6 +145,51 @@ WetBanana = (function() {
     if (OVERRIDE_TAGS.some(function(tag) { return tag == e.tagName })) return true
     return arguments.callee(e.parentNode)
   }
+
+  // === Clipboard Stuff ===
+  var Clipboard = (function(){
+    var blockElement = null
+    
+    function isPastable(e) {
+      return e && e.tagName == 'INPUT' || e.tagName == 'TEXTAREA'
+    }
+
+    // Block the next paste event if a text element is active. This is a
+    // workaround for middle-click paste not being preventable on Linux.
+    function blockPaste() {
+      var e = document.activeElement
+      if (blockElement != e) {
+        if (blockElement) unblockPaste()
+        if (isPastable(e)) {
+          debug("blocking paste for active text element", e)
+          blockElement = e
+          e.addEventListener('paste',onPaste,true)
+        }
+      }
+    }
+
+    function unblockPaste() {
+      if (blockElement) {
+        debug("unblocking paste", blockElement)
+        blockElement.removeEventListener('paste',onPaste,true)
+        blockElement = null
+      }
+    }
+
+    function onPaste(ev) {
+      var e = ev.target
+      if (e) {
+        if (blockElement == e) {
+          blockElement = null
+          ev.preventDefault()
+        }
+        e.removeEventListener('paste',arguments.callee,true)
+      }
+    }
+
+    return { blockPaste: blockPaste,
+             unblockPaste: unblockPaste }
+  })()
   
   // === Fake Selection ===
   
@@ -212,7 +257,7 @@ WetBanana = (function() {
 
   // === Motion ===
 
-  Motion = (function() {
+  var Motion = (function() {
     const MIN_SPEED_SQUARED = 1
     const FILTER_INTERVAL = 100
     var position = null
@@ -418,6 +463,7 @@ WetBanana = (function() {
   function stopDrag(ev) {
     debug("drag stop")
     if (options.cursor) document.body.style.cursor = "auto"
+    Clipboard.unblockPaste()
     if (updateDrag(ev)) {
       window.setTimeout(updateGlide,TIME_STEP)
       activity = GLIDE
@@ -478,6 +524,7 @@ WetBanana = (function() {
       mouseOrigin = [ev.clientX,ev.clientY]
       Motion.impulse(mouseOrigin,ev.timeStamp)
       ev.preventDefault()
+      if (ev.button == MBUTTON && ev.target != document.activeElement) Clipboard.blockPaste()
       break
       
     default:
@@ -524,7 +571,10 @@ WetBanana = (function() {
 
     case CLICK:
       debug("unclick, no drag")
+      Clipboard.unblockPaste()
       if (ev.button == 0) getSelection().collapse()
+      if (document.activeElement) document.activeElement.blur()
+      if (ev.target) ev.target.focus()
       if (ev.button == options.button) activity = STOP
       break
 
