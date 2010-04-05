@@ -99,6 +99,9 @@ WetBanana = (function() {
 
   small <html>.clientHeight:
     http://highscalability.com/scaling-twitter-making-twitter-10000-percent-faster
+
+  short document.body
+    http://damienkatz.net/2008/04/couchdb_language_change.html
   */
   
   // Test if a mouse event occurred over a scrollbar by testing if the
@@ -108,6 +111,7 @@ WetBanana = (function() {
     var t = ev.target == document.documentElement ? document.body : ev.target
     return t &&
            t.clientWidth > 0 && t.clientHeight > 0 &&
+           // (ev.clientX >= t.clientWidth || ev.clientY >= t.clientHeight)
            (ev.offsetX-t.scrollLeft >= t.clientWidth ||
             ev.offsetY-t.scrollTop  >= t.clientHeight)
   }
@@ -524,7 +528,10 @@ WetBanana = (function() {
       mouseOrigin = [ev.clientX,ev.clientY]
       Motion.impulse(mouseOrigin,ev.timeStamp)
       ev.preventDefault()
-      if (ev.button == MBUTTON && ev.target != document.activeElement) Clipboard.blockPaste()
+      if (ev.button == MBUTTON &&
+          ev.target != document.activeElement) Clipboard.blockPaste()
+      if (ev.button == RBUTTON &&
+          navigator.platform.match(/Linux/)) blockContextMenu = true
       break
       
     default:
