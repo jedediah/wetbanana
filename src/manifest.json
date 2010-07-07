@@ -1,12 +1,12 @@
 {
-  "name": "Wet Banana",
-  "version": "0.3.999.6",
-  "description": "Click and drag the page, with physics",
+  "name": "Scrollbar Anywhere",
+  "version": "0.1",
+  "description": "Click and drag the page",
   "icons": {
-    "128": "icon128.png",
-    "48": "icon48.png",
-    "32": "icon32.png",
-    "16": "icon16.png"
+    //"128": "icon128.png",
+    //"48": "icon48.png",
+    //"32": "icon32.png",
+    //"16": "icon16.png"
   },
   "content_scripts": [
     {

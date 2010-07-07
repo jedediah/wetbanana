@@ -1,5 +1,5 @@
 
-WetBanana = (function() {
+ScrollbarAnywhere = (function() {
 
   // === Options ===
 
@@ -378,8 +378,8 @@ WetBanana = (function() {
         var y = element.scrollTop
         try {
           scrolling = true
-          element.scrollLeft = (scrollOrigin[0] - pos[0]) * options.scaling
-          element.scrollTop  = (scrollOrigin[1] - pos[1]) * options.scaling
+          element.scrollLeft = scrollOrigin[0] + pos[0] * (scrollSize[0] / viewportSize[0]) * 1.15
+          element.scrollTop  = scrollOrigin[1] + pos[1] * (scrollSize[1] / viewportSize[1]) * 1.15
         } finally {
           scrolling = false
         }
@@ -668,5 +668,5 @@ WetBanana = (function() {
   
 })()
 
-WetBanana.init()
+ScrollbarAnywhere.init()
 
