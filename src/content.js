@@ -348,7 +348,7 @@ ScrollbarAnywhere = (function() {
     // Return the size of the element as it appears in parent's layout
     function getViewportSize(el) {
       if (el == document.body) {
-        return [el.innerWidth, el.innerHeight]
+        return [window.innerWidth, window.innerHeight]
       } else {
         return [el.clientWidth, el.clientHeight]
       }
