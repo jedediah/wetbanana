@@ -6,9 +6,6 @@
     <style>
       body {
         font-family: sans-serif;
-        background-image: url("banana.jpg");
-        background-repeat: no-repeat;
-        background-position: center 450px;
       }
 
       h2 { margin: 0 }
@@ -50,10 +47,10 @@ function save() {
     error("Somehow, you broke the button field")
   } else o.button = x
 
-  x = $('scaling').value-0
+  /*x = $('scaling').value-0
   if (isNaN(x)) {
     error("Scaling must be a number")
-  } else o.scaling = x
+  } else o.scaling = x*/
 
   x = $('speed').value-0
   if (isNaN(x) || x < 0) {
@@ -85,7 +82,7 @@ function load() {
     $('key_'+KEYS[i]).checked = (o['key_'+KEYS[i]]+"" == "true")
   }
 
-  $('scaling').value  = o.scaling
+/*  $('scaling').value  = o.scaling*/
   $('speed').value    = o.speed
   $('friction').value = o.friction
 
@@ -118,7 +115,7 @@ document.addEventListener('load',function(ev) {
     $('key_'+key).addEventListener('change',onUpdate,false)
   })
   
-  ;['scaling','speed','friction'].forEach(function(id) {
+  ;[/*'scaling',*/'speed','friction'].forEach(function(id) {
     $(id).addEventListener('change',onUpdate,true)
     $(id).addEventListener('keydown',onUpdate,true)
     $(id).addEventListener('mousedown',onUpdate,true)
@@ -193,6 +190,7 @@ document.addEventListener('unload',save,true)
           </td>
         </tr>
 
+        <!-- 
         <tr>
           <td align="right">
             <h2>Scaling</h2>
@@ -202,6 +200,7 @@ document.addEventListener('unload',save,true)
             <input id="scaling" type="text" style="width:60px" /> <sub>screen pixels for every mouse pixel</sub>
           </td>
         </tr>
+        -->
 
         <tr>
           <td align="right">
@@ -238,9 +237,8 @@ document.addEventListener('unload',save,true)
         Scrollbar Anywhere by David P&auml;rsson -
         <a href="http://github.com/davidparsson/ScrollbarAnywhere">Code</a> -
         <a href="http://github.com/davidparsson/ScrollbarAnywhere/issues">Support</a>
-        <br/> based on Wet Banana by Jedediah Smith -
-        <a href="http://github.com/jedediah/wetbanana">Code</a> -
-        <a href="http://github.com/jedediah/wetbanana/issues">Support</a>
+        <br/> Inspired by <a href="http://pagesperso-orange.fr/marc.boullet/ext/extensions-en.html">Scrollbar Anywhere</a> for Firefox by Marc Boullet
+        <br/> Based on <a href="https://chrome.google.com/extensions/detail/ljecomdaijmibecakcpjadigpfkollbh">Wet Banana</a> by Jedediah Smith
       </p>
       
       <i>Test your settings by dragging this page</i><br/>
