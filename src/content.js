@@ -656,6 +656,19 @@ ScrollbarAnywhere = (function() {
     }
   }
   
+  function onLoad(ev) {
+    scrollFix = document.createElement('div')
+    scrollFix.style.position = 'fixed'
+    scrollFix.style.top=0
+    scrollFix.style.right=0
+    scrollFix.style.bottom=0
+    scrollFix.style.left=0
+    scrollFix.style.zIndex=-99999999
+    scrollFix.style.background='transparent none'
+    scrollFix.style.border='none'
+    document.body.appendChild(scrollFix)
+  }
+  
   return {
     init: function() {
       addEventListener("mousedown",     onMouseDown,   true)
@@ -663,6 +676,7 @@ ScrollbarAnywhere = (function() {
       addEventListener("mousemove",     onMouseMove,   true)
       addEventListener("mouseout",      onMouseOut,    true)
       addEventListener("contextmenu",   onContextMenu, true)
+      addEventListener("load",          onLoad,        true)
     }
   }
   
