@@ -1,7 +1,7 @@
 {
   "name": "Scrollbar Anywhere",
   "version": "0.1.2",
-  "description": "Click and drag anywhere to scroll the page",
+  "description": "Click and drag anywhere to scroll the page.",
   "icons": {
     "128": "icon128.png",
     "48": "icon48.png",
