@@ -108,12 +108,20 @@ ScrollbarAnywhere = (function() {
   // coordinates of the event are outside the target element. Also test
   // if the element is inline by checking for zero size.
   function isOverScrollbar(ev) {
-    var t = ev.target == document.documentElement ? document.body : ev.target
-    return t &&
-           t.clientWidth > 0 && t.clientHeight > 0 &&
-           // (ev.clientX >= t.clientWidth || ev.clientY >= t.clientHeight)
-           (ev.offsetX-t.scrollLeft >= t.clientWidth ||
-            ev.offsetY-t.scrollTop  >= t.clientHeight)
+    var t = ev.target == document.documentElement ? document.body : ev.target;
+    if (t.clientWidth > 0 && t.clientHeight > 0) {
+      var vClickPos = ev.offsetX - t.scrollLeft;
+      var hClickPos = ev.offsetY - t.scrollTop;
+      if (vClickPos >= t.clientWidth || hClickPos >= t.ClientHeight)
+      {
+        var styles = window.getComputedStyle(t, null);
+        var borderWidth = (parseInt(styles.borderLeftWidth) || 0) + (parseInt(styles.borderRightWidth) || 0); 
+        var borderHeight = (parseInt(styles.borderTopWidth) || 0) + (parseInt(styles.borderBottomWidth) || 0);
+        return ((vClickPos >= t.clientWidth + borderWidth) ||
+                (hClickPos >= t.clientHeight + borderHeight))
+      }
+    }
+    return false;
   }
   
   // Can the given element be scrolled on either axis?
@@ -454,8 +462,8 @@ ScrollbarAnywhere = (function() {
     var moving = false
     if (v[0] && v[1])
     {
-    	moving = Motion.impulse(v,ev.timeStamp)
-    	Scroll.move(vsub(v,mouseOrigin))
+      moving = Motion.impulse(v,ev.timeStamp)
+      Scroll.move(vsub(v,mouseOrigin))
     }
     return moving
   }
@@ -506,7 +514,7 @@ ScrollbarAnywhere = (function() {
         break
       }
       
-      if (hasOverrideAncestor(ev.target)) {
+      if (options.button == LBUTTON && hasOverrideAncestor(ev.target)) {
         debug("forbidden target element, ignoring",ev)
         break
       }
@@ -613,8 +621,8 @@ ScrollbarAnywhere = (function() {
 
     case CLICK: break
 
-    case DRAG: 
-      if (ev.toElement == null) stopDrag(ev)
+    case DRAG:
+      if (ev.toElement == null || ev.toElement.tagName == 'IFRAME') stopDrag(ev)
       break
 
     case GLIDE: break
