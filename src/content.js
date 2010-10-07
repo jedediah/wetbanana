@@ -451,8 +451,12 @@ ScrollbarAnywhere = (function() {
   function updateDrag(ev) {
     debug("drag update")
     var v = [ev.clientX,ev.clientY]
-    var moving = Motion.impulse(v,ev.timeStamp)
-    Scroll.move(vsub(v,mouseOrigin))
+    var moving = false
+    if (v[0] && v[1])
+    {
+    	moving = Motion.impulse(v,ev.timeStamp)
+    	Scroll.move(vsub(v,mouseOrigin))
+    }
     return moving
   }
   
