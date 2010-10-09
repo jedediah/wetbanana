@@ -114,7 +114,7 @@ ScrollbarAnywhere = (function() {
       var hClickPos = ev.offsetY - t.scrollTop;
       if (vClickPos >= t.clientWidth || hClickPos >= t.ClientHeight)
       {
-        var styles = window.getComputedStyle(t, null);
+        var styles = window.getComputedStyle(t);
         var borderWidth = (parseInt(styles.borderLeftWidth) || 0) + (parseInt(styles.borderRightWidth) || 0); 
         var borderHeight = (parseInt(styles.borderTopWidth) || 0) + (parseInt(styles.borderBottomWidth) || 0);
         return ((vClickPos >= t.clientWidth + borderWidth) ||
@@ -151,10 +151,14 @@ ScrollbarAnywhere = (function() {
   }
   
   // Don't drag when left-clicking on these elements
-  const OVERRIDE_TAGS = ['A','INPUT','SELECT','TEXTAREA','BUTTON','LABEL','OBJECT','EMBED']
+  const LBUTTON_OVERRIDE_TAGS = ['A','INPUT','SELECT','TEXTAREA','BUTTON','LABEL','OBJECT','EMBED']
+  const MBUTTON_OVERRIDE_TAGS = ['A','OBJECT','EMBED']
+  const RBUTTON_OVERRIDE_TAGS = ['A','INPUT','TEXTAREA','OBJECT','EMBED']
   function hasOverrideAncestor(e) {
     if (e == null) return false
-    if (OVERRIDE_TAGS.some(function(tag) { return tag == e.tagName })) return true
+    if (options.button == LBUTTON && LBUTTON_OVERRIDE_TAGS.some(function(tag) { return tag == e.tagName })) return true
+    if (options.button == MBUTTON && MBUTTON_OVERRIDE_TAGS.some(function(tag) { return tag == e.tagName })) return true
+    if (options.button == RBUTTON && RBUTTON_OVERRIDE_TAGS.some(function(tag) { return tag == e.tagName })) return true
     return arguments.callee(e.parentNode)
   }
 
@@ -433,6 +437,7 @@ ScrollbarAnywhere = (function() {
 
   var activity = STOP
   var blockContextMenu = false
+  var showScrollFix = false
   var mouseOrigin = null
   var dragElement = null
 
@@ -514,7 +519,7 @@ ScrollbarAnywhere = (function() {
         break
       }
       
-      if (options.button == LBUTTON && hasOverrideAncestor(ev.target)) {
+      if (hasOverrideAncestor(ev.target)) {
         debug("forbidden target element, ignoring",ev)
         break
       }
@@ -544,6 +549,7 @@ ScrollbarAnywhere = (function() {
           ev.target != document.activeElement) Clipboard.blockPaste()
       if (ev.button == RBUTTON &&
           navigator.platform.match(/Linux/)) blockContextMenu = true
+      showScrollFix = true
       break
       
     default:
@@ -561,6 +567,10 @@ ScrollbarAnywhere = (function() {
     case CLICK:
       if (ev.button == options.button) {
         if (options.button == RBUTTON) blockContextMenu = true
+        if (showScrollFix) {
+        	scrollFix.style.display='block';
+        	showScrollFix = false;
+        }
         startDrag(ev)
         ev.preventDefault()
       }
@@ -599,6 +609,7 @@ ScrollbarAnywhere = (function() {
 
     case DRAG:
       if (ev.button == options.button) {
+        scrollFix.style.display = 'none'
         stopDrag(ev)
         ev.preventDefault()
       }
@@ -622,7 +633,7 @@ ScrollbarAnywhere = (function() {
     case CLICK: break
 
     case DRAG:
-      if (ev.toElement == null || ev.toElement.tagName == 'IFRAME') stopDrag(ev)
+      if (ev.toElement == null) stopDrag(ev)
       break
 
     case GLIDE: break
@@ -667,7 +678,7 @@ ScrollbarAnywhere = (function() {
       ev.preventDefault()
     }
   }
-  
+  var scrollFix;
   function onLoad(ev) {
     scrollFix = document.createElement('div')
     scrollFix.style.position = 'fixed'
@@ -675,9 +686,10 @@ ScrollbarAnywhere = (function() {
     scrollFix.style.right=0
     scrollFix.style.bottom=0
     scrollFix.style.left=0
-    scrollFix.style.zIndex=-99999999
-    scrollFix.style.background='transparent none'
-    scrollFix.style.border='none'
+    scrollFix.style.zIndex=99999999
+    scrollFix.style.background='transparent none !important'
+    scrollFix.style.display='none'
+    //if (options.debug) scrollFix.style.borderRight='5px solid rgba(0,0,0,0.04)'
     document.body.appendChild(scrollFix)
   }
   
