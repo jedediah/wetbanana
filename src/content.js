@@ -207,6 +207,37 @@ ScrollbarAnywhere = (function() {
              unblockPaste: unblockPaste }
   })()
   
+  // === Scrollfix hack ===
+  var ScrollFix = (function(){
+	  var scrollFixElement = null;
+	  
+	  function init() {
+		  scrollFixElement = document.createElement('div');
+		  scrollFixElement.style.position = 'fixed';
+		  scrollFixElement.style.top=0;
+		  scrollFixElement.style.right=0;
+		  scrollFixElement.style.bottom=0;
+		  scrollFixElement.style.left=0;
+		  scrollFixElement.style.zIndex=99999999;
+		  scrollFixElement.style.background='transparent none !important';
+		  scrollFixElement.style.display='none';
+		  //if (options.debug) scrollFixElement.style.borderRight='5px solid rgba(0,0,0,0.04)';
+		  document.body.appendChild(scrollFixElement);
+	  }
+	  
+	  function show() {
+		  scrollFixElement.style.display = 'block';
+	  }
+	  
+	  function hide() {
+		  scrollFixElement.style.display = 'none';
+	  }
+	  
+	  return { init: init,
+		       show: show,
+		       hide: hide }
+  })();
+  
   // === Fake Selection ===
   
   var Selector = (function(){
@@ -485,6 +516,7 @@ ScrollbarAnywhere = (function() {
     debug("drag stop")
     if (options.cursor) document.body.style.cursor = "auto"
     Clipboard.unblockPaste()
+    ScrollFix.hide()
     if (updateDrag(ev)) {
       window.setTimeout(updateGlide,TIME_STEP)
       activity = GLIDE
@@ -568,7 +600,7 @@ ScrollbarAnywhere = (function() {
       if (ev.button == options.button) {
         if (options.button == RBUTTON) blockContextMenu = true
         if (showScrollFix) {
-        	scrollFix.style.display='block';
+        	ScrollFix.show();
         	showScrollFix = false;
         }
         startDrag(ev)
@@ -601,6 +633,7 @@ ScrollbarAnywhere = (function() {
     case CLICK:
       debug("unclick, no drag")
       Clipboard.unblockPaste()
+      ScrollFix.hide()
       if (ev.button == 0) getSelection().collapse()
       if (document.activeElement) document.activeElement.blur()
       if (ev.target) ev.target.focus()
@@ -609,7 +642,6 @@ ScrollbarAnywhere = (function() {
 
     case DRAG:
       if (ev.button == options.button) {
-        scrollFix.style.display = 'none'
         stopDrag(ev)
         ev.preventDefault()
       }
@@ -678,19 +710,9 @@ ScrollbarAnywhere = (function() {
       ev.preventDefault()
     }
   }
-  var scrollFix;
+  
   function onLoad(ev) {
-    scrollFix = document.createElement('div')
-    scrollFix.style.position = 'fixed'
-    scrollFix.style.top=0
-    scrollFix.style.right=0
-    scrollFix.style.bottom=0
-    scrollFix.style.left=0
-    scrollFix.style.zIndex=99999999
-    scrollFix.style.background='transparent none !important'
-    scrollFix.style.display='none'
-    //if (options.debug) scrollFix.style.borderRight='5px solid rgba(0,0,0,0.04)'
-    document.body.appendChild(scrollFix)
+	  ScrollFix.init();
   }
   
   return {
