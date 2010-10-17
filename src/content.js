@@ -361,9 +361,11 @@ ScrollbarAnywhere = (function() {
       
       if (updateTime == null) {
         moving = false
-      } else {
-        var deltaSeconds = (time-updateTime)/1000
-        velocity = vsub(velocity,vmul(options.friction*deltaSeconds,velocity))
+      } else { 
+        var deltaSeconds = (time-updateTime)/1000;
+        var frictionMultiplier = Math.max(1-(options.friction/FILTER_INTERVAL), 0);
+        frictionMultiplier = Math.pow(frictionMultiplier, deltaSeconds*FILTER_INTERVAL);
+        velocity = vmul(frictionMultiplier, velocity);
         moving = clamp()
         position = vadd(position,vmul(deltaSeconds,velocity))
       }
