@@ -474,13 +474,13 @@ ScrollbarAnywhere = (function() {
 
   function updateGlide() {
     if (activity == GLIDE) {
-      debug("glide update")
-      var moving = Motion.glide(new Date().getTime())
-      Scroll.move(vsub(Motion.getPosition(),mouseOrigin))
+      debug("glide update");
+      var moving = Motion.glide(new Date().getTime());
+      moving = Scroll.move(vsub(Motion.getPosition(),mouseOrigin)) && moving;
       if (moving) {
-        setTimeout(updateGlide,TIME_STEP)
+        setTimeout(updateGlide,TIME_STEP);
       } else {
-        stopGlide()
+        stopGlide();
       }
     }
   }
@@ -585,9 +585,12 @@ ScrollbarAnywhere = (function() {
       break
       
     default:
-      debug("WARNING: illegal activity for mousedown: "+ACTIVITIES[activity])
-      activity = STOP
-      return onMouseDown(ev)
+      debug("WARNING: illegal activity for mousedown: "+ACTIVITIES[activity]);
+      if (options.cursor) document.body.style.cursor = "auto";
+      Clipboard.unblockPaste();
+      ScrollFix.hide();
+      activity = STOP;
+      return onMouseDown(ev);
     }
   }
   
@@ -610,12 +613,10 @@ ScrollbarAnywhere = (function() {
       
     case DRAG:
       if (ev.button == options.button) {
-        updateDrag(ev)
-        ev.preventDefault()
-      } else {
-        stopDrag(ev)
+        updateDrag(ev);
+        ev.preventDefault();
       }
-      break
+      break;
 
     case GLIDE: break
 
