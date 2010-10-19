@@ -105,23 +105,35 @@ ScrollbarAnywhere = (function() {
   */
   
   // Test if a mouse event occurred over a scrollbar by testing if the
-  // coordinates of the event are outside the target element. Also test
-  // if the element is inline by checking for zero size.
+  // coordinates of the event are on the outside of a scrollable element.
+  // The body element is treated separately since the visible size is
+  // fetched differently depending on the doctype.
   function isOverScrollbar(ev) {
     var t = ev.target == document.documentElement ? document.body : ev.target;
-    if (t.clientWidth > 0 && t.clientHeight > 0) {
-      var vClickPos = ev.offsetX - t.scrollLeft;
-      var hClickPos = ev.offsetY - t.scrollTop;
-      if (vClickPos >= t.clientWidth || hClickPos >= t.ClientHeight)
-      {
-        var styles = window.getComputedStyle(t);
-        var borderWidth = (parseInt(styles.borderLeftWidth) || 0) + (parseInt(styles.borderRightWidth) || 0); 
-        var borderHeight = (parseInt(styles.borderTopWidth) || 0) + (parseInt(styles.borderBottomWidth) || 0);
-        return ((vClickPos >= t.clientWidth + borderWidth) ||
-                (hClickPos >= t.clientHeight + borderHeight))
+    if (t == document.body) {
+      var d = document.documentElement;
+      var clientWidth;
+      var clientHeight;
+      if (d.scrollHeight == d.clientHeight && d.scrollHeight == d.offsetHeight) {
+        // Guessing it's a no doctype document
+        clientWidth = t.clientWidth;
+        clientHeight = t.clientHeight;
       }
+      else {
+        clientWidth = d.clientWidth;
+        clientHeight = d.clientHeight;
+      }
+      return (ev.offsetX - t.scrollLeft >= clientWidth || 
+              ev.offsetY - t.scrollTop >= clientHeight);
     }
-    return false;
+    else if (!isScrollable(t)) {
+      return false;
+    }
+    else
+    {
+      return (ev.offsetX - t.scrollLeft >= t.clientWidth || 
+              ev.offsetY - t.scrollTop >= t.clientHeight);
+    }
   }
   
   // Can the given element be scrolled on either axis?
@@ -209,37 +221,37 @@ ScrollbarAnywhere = (function() {
   
   // === Scrollfix hack ===
   var ScrollFix = (function(){
-	  var scrollFixElement = null;
-	  
-	  function init() {
-		  scrollFixElement = document.createElement('div');
-		  scrollFixElement.style.position = 'fixed';
-		  scrollFixElement.style.top=0;
-		  scrollFixElement.style.right=0;
-		  scrollFixElement.style.bottom=0;
-		  scrollFixElement.style.left=0;
-		  scrollFixElement.style.zIndex=99999999;
-		  scrollFixElement.style.background='transparent none !important';
-		  scrollFixElement.style.display='none';
-		  //if (options.debug) scrollFixElement.style.borderRight='5px solid rgba(0,0,0,0.04)';
-		  document.body.appendChild(scrollFixElement);
-	  }
-	  
-	  function show() {
-		  if (scrollFixElement != null) {
-			  scrollFixElement.style.display = 'block';
-		  }
-	  }
-	  
-	  function hide() {
-		  if (scrollFixElement != null) {
-			  scrollFixElement.style.display = 'none';
-		  }
-	  }
-	  
-	  return { init: init,
-		       show: show,
-		       hide: hide }
+    var scrollFixElement = null;
+    
+    function init() {
+      scrollFixElement = document.createElement('div');
+      scrollFixElement.style.position = 'fixed';
+      scrollFixElement.style.top=0;
+      scrollFixElement.style.right=0;
+      scrollFixElement.style.bottom=0;
+      scrollFixElement.style.left=0;
+      scrollFixElement.style.zIndex=99999999;
+      scrollFixElement.style.background='transparent none !important';
+      scrollFixElement.style.display='none';
+      //if (options.debug) scrollFixElement.style.borderRight='5px solid rgba(0,0,0,0.04)';
+      document.body.appendChild(scrollFixElement);
+    }
+    
+    function show() {
+      if (scrollFixElement != null) {
+        scrollFixElement.style.display = 'block';
+      }
+    }
+    
+    function hide() {
+      if (scrollFixElement != null) {
+        scrollFixElement.style.display = 'none';
+      }
+    }
+    
+    return { init: init,
+             show: show,
+             hide: hide }
   })();
   
   // === Fake Selection ===
@@ -609,8 +621,8 @@ ScrollbarAnywhere = (function() {
       if (ev.button == options.button) {
         if (options.button == RBUTTON) blockContextMenu = true
         if (showScrollFix) {
-        	ScrollFix.show();
-        	showScrollFix = false;
+          ScrollFix.show();
+          showScrollFix = false;
         }
         startDrag(ev)
         ev.preventDefault()
@@ -719,7 +731,7 @@ ScrollbarAnywhere = (function() {
   }
   
   function onLoad(ev) {
-	  ScrollFix.init();
+    ScrollFix.init();
   }
   
   return {
