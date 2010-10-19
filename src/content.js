@@ -226,11 +226,15 @@ ScrollbarAnywhere = (function() {
 	  }
 	  
 	  function show() {
-		  scrollFixElement.style.display = 'block';
+		  if (scrollFixElement != null) {
+			  scrollFixElement.style.display = 'block';
+		  }
 	  }
 	  
 	  function hide() {
-		  scrollFixElement.style.display = 'none';
+		  if (scrollFixElement != null) {
+			  scrollFixElement.style.display = 'none';
+		  }
 	  }
 	  
 	  return { init: init,
