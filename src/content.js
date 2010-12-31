@@ -164,7 +164,7 @@ ScrollbarAnywhere = (function() {
   
   // Don't drag when left-clicking on these elements
   const LBUTTON_OVERRIDE_TAGS = ['A','INPUT','SELECT','TEXTAREA','BUTTON','LABEL','OBJECT','EMBED']
-  const MBUTTON_OVERRIDE_TAGS = ['A','OBJECT','EMBED']
+  const MBUTTON_OVERRIDE_TAGS = ['A']
   const RBUTTON_OVERRIDE_TAGS = ['A','INPUT','TEXTAREA','OBJECT','EMBED']
   function hasOverrideAncestor(e) {
     if (e == null) return false
@@ -223,7 +223,7 @@ ScrollbarAnywhere = (function() {
   var ScrollFix = (function(){
     var scrollFixElement = null;
     
-    function init() {
+    function createScrollFix() {
       scrollFixElement = document.createElement('div');
       scrollFixElement.style.position = 'fixed';
       scrollFixElement.style.top=0;
@@ -232,25 +232,23 @@ ScrollbarAnywhere = (function() {
       scrollFixElement.style.left=0;
       scrollFixElement.style.zIndex=99999999;
       scrollFixElement.style.background='transparent none !important';
-      scrollFixElement.style.display='none';
-      //if (options.debug) scrollFixElement.style.borderRight='5px solid rgba(0,0,0,0.04)';
-      document.body.appendChild(scrollFixElement);
+      scrollFixElement.style.display='block';
+      //scrollFixElement.style.borderRight='5px solid rgba(0,0,0,0.04)';
     }
     
     function show() {
-      if (scrollFixElement != null) {
-        scrollFixElement.style.display = 'block';
+      if (scrollFixElement == null) {
+        createScrollFix();
       }
+      document.body.appendChild(scrollFixElement);
     }
     
     function hide() {
       if (scrollFixElement != null) {
-        scrollFixElement.style.display = 'none';
-      }
+        scrollFixElement.parentNode.removeChild(scrollFixElement);      }
     }
     
-    return { init: init,
-             show: show,
+    return { show: show,
              hide: hide }
   })();
   
@@ -730,10 +728,6 @@ ScrollbarAnywhere = (function() {
     }
   }
   
-  function onLoad(ev) {
-    ScrollFix.init();
-  }
-  
   return {
     init: function() {
       addEventListener("mousedown",     onMouseDown,   true)
@@ -741,7 +735,6 @@ ScrollbarAnywhere = (function() {
       addEventListener("mousemove",     onMouseMove,   true)
       addEventListener("mouseout",      onMouseOut,    true)
       addEventListener("contextmenu",   onContextMenu, true)
-      addEventListener("load",          onLoad,        true)
     }
   }
   
