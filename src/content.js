@@ -435,7 +435,7 @@ ScrollbarAnywhere = (function() {
         scrollMultiplier = [(scrollSize[0] / viewportSize[0]) * 1.15 * options.scaling,
                             (scrollSize[1] / viewportSize[1]) * 1.15 * options.scaling];
       }
-      getScrollEventSource(el).addEventListener("scroll",onScroll,true)
+      
     }
     
     // Move the currently dragged element relative to the starting position
@@ -460,7 +460,6 @@ ScrollbarAnywhere = (function() {
     // Stop dragging
     function stop() {
       if (element) {
-        getScrollEventSource(element).removeEventListener("scroll",onScroll,true)
         element = null
         viewportSize = null
         scrollSize = null
@@ -468,12 +467,6 @@ ScrollbarAnywhere = (function() {
       }
     }
 
-    function onScroll(ev) {
-      if (!scrolling &&
-          getScrollEventSource(element) == ev.target &&
-          scrollListener) scrollListener(ev)
-    }
-    
     function listen(fn) {
       scrollListener = fn
     }
@@ -705,33 +698,6 @@ ScrollbarAnywhere = (function() {
       break
     }
   }
-
-  function onScroll(ev) {
-    debug("scroll",ev)
-    switch (activity) {
-
-    case STOP: break
-
-    case CLICK:
-      activity = STOP
-      break
-
-    case DRAG:
-      stopDrag(ev)
-      stopGlide(ev)
-      break
-
-    case GLIDE:
-      stopGlide(ev)
-      break
-
-    default:
-      debug("WARNING: unknown state: "+activity)
-      break
-    }
-  }
-
-  Scroll.listen(onScroll)
 
   function onContextMenu(ev) {
     if (blockContextMenu) {
