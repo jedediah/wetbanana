@@ -11,6 +11,7 @@ ScrollbarAnywhere = (function() {
       options = msg.saveOptions
       options.cursor = (options.cursor == "true")
       options.notext = (options.notext == "true")
+      options.grab_and_drag = (options.grab_and_drag == "true")
       options.debug = (options.debug == "true")
       debug("saveOptions: ",options)
     }
@@ -237,15 +238,16 @@ ScrollbarAnywhere = (function() {
     }
     
     function show() {
-      if (scrollFixElement == null) {
+      if (scrollFixElement === null) {
         createScrollFix();
       }
       document.body.appendChild(scrollFixElement);
     }
     
     function hide() {
-      if (scrollFixElement != null) {
-        scrollFixElement.parentNode.removeChild(scrollFixElement);      }
+      if (scrollFixElement !== null && scrollFixElement.parentNode !== null) {
+        scrollFixElement.parentNode.removeChild(scrollFixElement);
+      }
     }
     
     return { show: show,
@@ -403,6 +405,7 @@ ScrollbarAnywhere = (function() {
     var viewportSize
     var scrollSize
     var scrollListener
+    var scrollMultiplier;
 
     // Return the size of the element as it appears in parent's layout
     function getViewportSize(el) {
@@ -424,6 +427,14 @@ ScrollbarAnywhere = (function() {
       viewportSize = getViewportSize(el)
       scrollSize = [el.scrollWidth, el.scrollHeight]
       scrollOrigin = [el.scrollLeft, el.scrollTop]
+      if (options.grab_and_drag) {
+        scrollMultiplier = [-options.scaling,
+                            -options.scaling];
+      }
+      else {
+        scrollMultiplier = [(scrollSize[0] / viewportSize[0]) * 1.15 * options.scaling,
+                            (scrollSize[1] / viewportSize[1]) * 1.15 * options.scaling];
+      }
       getScrollEventSource(el).addEventListener("scroll",onScroll,true)
     }
     
@@ -437,8 +448,8 @@ ScrollbarAnywhere = (function() {
         var y = element.scrollTop
         try {
           scrolling = true
-          element.scrollLeft = scrollOrigin[0] + pos[0] * (scrollSize[0] / viewportSize[0]) * 1.15
-          element.scrollTop  = scrollOrigin[1] + pos[1] * (scrollSize[1] / viewportSize[1]) * 1.15
+          element.scrollLeft = scrollOrigin[0] + pos[0] * scrollMultiplier[0];
+          element.scrollTop  = scrollOrigin[1] + pos[1] * scrollMultiplier[1];
         } finally {
           scrolling = false
         }
@@ -596,7 +607,9 @@ ScrollbarAnywhere = (function() {
       if (ev.button == MBUTTON &&
           ev.target != document.activeElement) Clipboard.blockPaste()
       if (ev.button == RBUTTON &&
-          navigator.platform.match(/Linux/)) blockContextMenu = true
+          (navigator.platform.match(/Mac/) || navigator.platform.match(/Linux/))) {
+        blockContextMenu = true;
+      }
       showScrollFix = true
       break
       

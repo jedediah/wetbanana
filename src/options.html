@@ -51,10 +51,10 @@ function save() {
     error("Somehow, you broke the button field")
   } else o.button = x
 
-  /*x = $('scaling').value-0
+  x = $('scaling').value-0
   if (isNaN(x)) {
     error("Scaling must be a number")
-  } else o.scaling = x*/
+  } else o.scaling = x / 100
 
   x = $('speed').value-0
   if (isNaN(x) || x < 0) {
@@ -72,6 +72,7 @@ function save() {
 
   o.cursor = $('cursor').checked
   o.notext = $('notext').checked
+  o.grab_and_drag = $('grab_and_drag').checked
   o.debug = $('debug').checked
 
   chrome.extension.getBackgroundPage().saveOptions(o)
@@ -86,12 +87,13 @@ function load() {
     $('key_'+KEYS[i]).checked = (o['key_'+KEYS[i]]+"" == "true")
   }
 
-/*  $('scaling').value  = o.scaling*/
+  $('scaling').value  = o.scaling * 100
   $('speed').value    = o.speed
   $('friction').value = o.friction
 
   $('cursor').checked = (o.cursor == "true")
   $('notext').checked = (o.notext == "true")
+  $('grab_and_drag').checked = (o.grab_and_drag == "true")
   $('debug').checked = (o.debug == "true")
 }
 
@@ -111,7 +113,7 @@ function scrollToTop() { window.scrollTo(0,0) }
 
 
 document.addEventListener('load',function(ev) {
-  ['button','cursor','notext','debug'].forEach(function(id) {
+  ['button','cursor','notext','debug', 'grab_and_drag'].forEach(function(id) {
     $(id).addEventListener('change',onUpdate,false)
   })
   
@@ -119,7 +121,7 @@ document.addEventListener('load',function(ev) {
     $('key_'+key).addEventListener('change',onUpdate,false)
   })
   
-  ;[/*'scaling',*/'speed','friction'].forEach(function(id) {
+  ;['scaling','speed','friction'].forEach(function(id) {
     $(id).addEventListener('change',onUpdate,true)
     $(id).addEventListener('keydown',onUpdate,true)
     $(id).addEventListener('mousedown',onUpdate,true)
@@ -182,29 +184,38 @@ document.addEventListener('unload',save,true)
         <tr>
           <td></td>
           <td>
-            <input id="notext" type="checkbox"/> <label for="notext">don't drag when clicking on text</label><br/>
+            <label for="notext"><input id="notext" type="checkbox"/> Don't drag when clicking on text</label><br/>
           </td>
         </tr>
 
         <tr>
           <td></td>
           <td>
-            <input id="cursor" type="checkbox"/> <label for="cursor">change cursor while dragging</label><br/>
+            <label for="cursor"><input id="cursor" type="checkbox"/> Change cursor while dragging</label><br/>
             <div class="tip">Try unchecking this if you notice any delays</div>
           </td>
         </tr>
 
-        <!--
+        <tr>
+          <td align="right">
+            <h2>Grab and drag</h2>
+            Grab-and-drag style scrolling will be enabled instead of the scrollbar anywhere style. 
+          </td>
+          <td>
+            <label for="grab_and_drag"><input id="grab_and_drag" type="checkbox"/> Use Grab-and-drag style scrolling</label><br/>
+          </td>
+        </tr>
+        
         <tr>
           <td align="right">
             <h2>Scaling</h2>
-            Mouse motion will be magnified by this factor. A negative number will invert scrolling.
+            Mouse motion will be magnified by this factor. A negative number will invert scrolling. 100 is default.
           </td>
           <td>
-            <input id="scaling" type="text" style="width:60px" /> <sub>screen pixels for every mouse pixel</sub>
+            <input id="scaling" type="text" style="width:60px" /> <sub>% of original scroll speed</sub>
           </td>
         </tr>
-        -->
+        
 
         <tr>
           <td align="right">
