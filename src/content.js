@@ -545,10 +545,15 @@ WetBanana = (function() {
       mouseOrigin = [ev.clientX,ev.clientY]
       Motion.impulse(mouseOrigin,ev.timeStamp)
       ev.preventDefault()
+
       if (ev.button == MBUTTON &&
-          ev.target != document.activeElement) Clipboard.blockPaste()
+          ev.target != document.activeElement)
+          Clipboard.blockPaste()
+
       if (ev.button == RBUTTON &&
-          navigator.platform.match(/Linux/)) blockContextMenu = true
+          (navigator.platform.match(/Linux/) || navigator.platform.match(/Mac/)))
+          blockContextMenu = true
+
       break
       
     default:
