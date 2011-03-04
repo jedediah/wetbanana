@@ -344,6 +344,7 @@ WetBanana = (function() {
     var viewportSize
     var scrollSize
     var scrollListener
+    var eatScrollEvent
 
     // Return the size of the element as it appears in parent's layout
     function getViewportSize(el) {
@@ -377,7 +378,12 @@ WetBanana = (function() {
         var x = element.scrollLeft
         var y = element.scrollTop
         try {
+          // onScroll callback may be sync or async (changed from former to latter in Chrome 10)
+          // If synchronous, scrolling will be true for both calls
+          // Is async, eatScrollEvent will be true for the single call
           scrolling = true
+          eatScrollEvent = true
+          
           element.scrollLeft = (scrollOrigin[0] - pos[0]) * options.scaling
           element.scrollTop  = (scrollOrigin[1] - pos[1]) * options.scaling
         } finally {
@@ -400,8 +406,14 @@ WetBanana = (function() {
 
     function onScroll(ev) {
       if (!scrolling &&
+          !eatScrollEvent &&
           getScrollEventSource(element) == ev.target &&
-          scrollListener) scrollListener(ev)
+          scrollListener) {
+
+          scrollListener(ev)
+      }
+      
+      eatScrollEvent = false;
     }
     
     function listen(fn) {
@@ -451,9 +463,14 @@ WetBanana = (function() {
   function updateDrag(ev) {
     debug("drag update")
     var v = [ev.clientX,ev.clientY]
-    var moving = Motion.impulse(v,ev.timeStamp)
-    Scroll.move(vsub(v,mouseOrigin))
-    return moving
+    
+    if (v[0] && v[1]) {
+      var moving = Motion.impulse(v,ev.timeStamp)
+      Scroll.move(vsub(v,mouseOrigin))
+      return moving
+    } else {
+      return false
+    }  
   }
   
   function startDrag(ev) {
