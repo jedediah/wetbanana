@@ -384,8 +384,8 @@ WetBanana = (function() {
           scrolling = true
           eatScrollEvent = true
           
-          element.scrollLeft = (scrollOrigin[0] - pos[0]) * options.scaling
-          element.scrollTop  = (scrollOrigin[1] - pos[1]) * options.scaling
+          element.scrollLeft = scrollOrigin[0] - pos[0] * options.scaling
+          element.scrollTop  = scrollOrigin[1] - pos[1] * options.scaling
         } finally {
           scrolling = false
         }
