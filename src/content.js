@@ -4,7 +4,7 @@ ScrollbarAnywhere = (function() {
   // === Options ===
 
   var options = {debug:true}
-  
+
   var port = chrome.extension.connect()
   port.onMessage.addListener(function(msg) {
     if (msg.saveOptions) {
@@ -28,7 +28,7 @@ ScrollbarAnywhere = (function() {
 
   const DEBUG_INTERVAL = 100
   var lastDebug = 0
-  
+
   function debugCont() {
     if (options.debug) {
       var now = Date.now()
@@ -39,7 +39,7 @@ ScrollbarAnywhere = (function() {
     }
   }
 
-  
+
   // === Util ===
 
   String.prototype.padLeft = function(n,c) {
@@ -49,18 +49,18 @@ ScrollbarAnywhere = (function() {
     a.push(this)
     return a.join('')
   }
-  
+
   function formatCoord(n) {
     return new Number(n).toFixed(3).padLeft(8)
   }
-  
+
   function formatVector(v) {
     return "["+formatCoord(v[0])+","+formatCoord(v[1])+"]"
   }
 
-  
+
   // === Vector math ===
-  
+
   function vadd(a,b)   { return [a[0]+b[0], a[1]+b[1]] }
   function vsub(a,b)   { return [a[0]-b[0], a[1]-b[1]] }
   function vmul(s,v)   { return [s*v[0], s*v[1]] }
@@ -104,7 +104,7 @@ ScrollbarAnywhere = (function() {
   short document.body
     http://damienkatz.net/2008/04/couchdb_language_change.html
   */
-  
+
   // Test if a mouse event occurred over a scrollbar by testing if the
   // coordinates of the event are on the outside of a scrollable element.
   // The body element is treated separately since the visible size is
@@ -124,7 +124,7 @@ ScrollbarAnywhere = (function() {
         clientWidth = d.clientWidth;
         clientHeight = d.clientHeight;
       }
-      return (ev.offsetX - t.scrollLeft >= clientWidth || 
+      return (ev.offsetX - t.scrollLeft >= clientWidth ||
               ev.offsetY - t.scrollTop >= clientHeight);
     }
     else if (!isScrollable(t)) {
@@ -132,11 +132,11 @@ ScrollbarAnywhere = (function() {
     }
     else
     {
-      return (ev.offsetX - t.scrollLeft >= t.clientWidth || 
+      return (ev.offsetX - t.scrollLeft >= t.clientWidth ||
               ev.offsetY - t.scrollTop >= t.clientHeight);
     }
   }
-  
+
   // Can the given element be scrolled on either axis?
   // That is, is the scroll size greater than the client size
   // and the CSS overflow set to scroll or auto?
@@ -145,7 +145,7 @@ ScrollbarAnywhere = (function() {
     if (e.scrollWidth > e.clientWidth) {
       o = document.defaultView.getComputedStyle(e)["overflow-x"]
       if (o == "auto" || o == "scroll") return true
-    }      
+    }
     if (e.scrollHeight > e.clientHeight) {
       o = document.defaultView.getComputedStyle(e)["overflow-y"]
       if (o == "auto" || o == "scroll") return true
@@ -162,23 +162,34 @@ ScrollbarAnywhere = (function() {
       return arguments.callee(e.parentNode)
     }
   }
-  
+
   // Don't drag when left-clicking on these elements
   const LBUTTON_OVERRIDE_TAGS = ['A','INPUT','SELECT','TEXTAREA','BUTTON','LABEL','OBJECT','EMBED']
   const MBUTTON_OVERRIDE_TAGS = ['A']
   const RBUTTON_OVERRIDE_TAGS = ['A','INPUT','TEXTAREA','OBJECT','EMBED']
   function hasOverrideAncestor(e) {
     if (e == null) return false
-    if (options.button == LBUTTON && LBUTTON_OVERRIDE_TAGS.some(function(tag) { return tag == e.tagName })) return true
+    if (options.button == LBUTTON && shouldOverrideLeftButton(e)) return true;
     if (options.button == MBUTTON && MBUTTON_OVERRIDE_TAGS.some(function(tag) { return tag == e.tagName })) return true
     if (options.button == RBUTTON && RBUTTON_OVERRIDE_TAGS.some(function(tag) { return tag == e.tagName })) return true
     return arguments.callee(e.parentNode)
   }
 
+  function shouldOverrideLeftButton(element) {
+    return LBUTTON_OVERRIDE_TAGS.some(function(tag) { return tag == e.tagName; }) || hasRoleButtonAttribute(e);
+  }
+
+  function hasRoleButtonAttribute(e) {
+    if (e.attributes && e.attributes.role) {
+      return e.attributes.role.value === 'button';
+    }
+    return false;
+  }
+
   // === Clipboard Stuff ===
   var Clipboard = (function(){
     var blockElement = null
-    
+
     function isPastable(e) {
       return e && e.tagName == 'INPUT' || e.tagName == 'TEXTAREA'
     }
@@ -219,11 +230,11 @@ ScrollbarAnywhere = (function() {
     return { blockPaste: blockPaste,
              unblockPaste: unblockPaste }
   })()
-  
+
   // === Scrollfix hack ===
   var ScrollFix = (function(){
     var scrollFixElement = null;
-    
+
     function createScrollFix() {
       scrollFixElement = document.createElement('div');
       scrollFixElement.style.position = 'fixed';
@@ -236,26 +247,26 @@ ScrollbarAnywhere = (function() {
       scrollFixElement.style.display='block';
       //scrollFixElement.style.borderRight='5px solid rgba(0,0,0,0.04)';
     }
-    
+
     function show() {
       if (scrollFixElement === null) {
         createScrollFix();
       }
       document.body.appendChild(scrollFixElement);
     }
-    
+
     function hide() {
       if (scrollFixElement !== null && scrollFixElement.parentNode !== null) {
         scrollFixElement.parentNode.removeChild(scrollFixElement);
       }
     }
-    
+
     return { show: show,
              hide: hide }
   })();
-  
+
   // === Fake Selection ===
-  
+
   var Selector = (function(){
 
     var startRange = null
@@ -374,10 +385,10 @@ ScrollbarAnywhere = (function() {
     function glide(time) {
       impulses = []
       var moving
-      
+
       if (updateTime == null) {
         moving = false
-      } else { 
+      } else {
         var deltaSeconds = (time-updateTime)/1000;
         var frictionMultiplier = Math.max(1-(options.friction/FILTER_INTERVAL), 0);
         frictionMultiplier = Math.pow(frictionMultiplier, deltaSeconds*FILTER_INTERVAL);
@@ -390,14 +401,14 @@ ScrollbarAnywhere = (function() {
     }
 
     function getPosition() { return position }
-    
+
     return { stop: stop,
              impulse: impulse,
              glide: glide,
              getPosition: getPosition }
   })()
 
-  
+
   Scroll = (function() {
     var scrolling = false
     var element
@@ -435,9 +446,9 @@ ScrollbarAnywhere = (function() {
         scrollMultiplier = [(scrollSize[0] / viewportSize[0]) * 1.15 * options.scaling,
                             (scrollSize[1] / viewportSize[1]) * 1.15 * options.scaling];
       }
-      
+
     }
-    
+
     // Move the currently dragged element relative to the starting position
     // and applying the the scaling setting.
     // Return if/not the element actually moved (i.e. if it did not hit a
@@ -470,18 +481,18 @@ ScrollbarAnywhere = (function() {
     function listen(fn) {
       scrollListener = fn
     }
-    
+
     return { start: start,
              move: move,
              stop: stop,
              listen: listen }
   })()
-  
+
 
   const LBUTTON=0, MBUTTON=1, RBUTTON=2
   const KEYS = ["shift","ctrl","alt","meta"]
   const TIME_STEP = 10
-  
+
   const STOP=0, CLICK=1, DRAG=2, GLIDE=3
   const ACTIVITIES = ["STOP","CLICK","DRAG","GLIDE"]
   for (var i = 0; i < ACTIVITIES.length; i++) window[ACTIVITIES[i]] = i
@@ -504,7 +515,7 @@ ScrollbarAnywhere = (function() {
       }
     }
   }
-  
+
   function stopGlide() {
     debug("glide stop")
     activity = STOP
@@ -523,7 +534,7 @@ ScrollbarAnywhere = (function() {
     }
     return moving
   }
-  
+
   function startDrag(ev) {
     debug("drag start")
     activity = DRAG
@@ -545,12 +556,12 @@ ScrollbarAnywhere = (function() {
       activity = STOP
     }
   }
-  
+
   function onMouseDown(ev) {
     blockContextMenu = false
-    
+
     switch (activity) {
-      
+
     case GLIDE:
       stopGlide(ev)
       // fall through
@@ -570,7 +581,7 @@ ScrollbarAnywhere = (function() {
         debug("wrong modkeys, ignoring")
         break
       }
-      
+
       if (hasOverrideAncestor(ev.target)) {
         debug("forbidden target element, ignoring",ev)
         break
@@ -605,7 +616,7 @@ ScrollbarAnywhere = (function() {
       }
       showScrollFix = true
       break
-      
+
     default:
       debug("WARNING: illegal activity for mousedown: "+ACTIVITIES[activity]);
       if (options.cursor) document.body.style.cursor = "auto";
@@ -615,7 +626,7 @@ ScrollbarAnywhere = (function() {
       return onMouseDown(ev);
     }
   }
-  
+
   function onMouseMove(ev) {
     switch (activity) {
 
@@ -632,7 +643,7 @@ ScrollbarAnywhere = (function() {
         ev.preventDefault()
       }
       break
-      
+
     case DRAG:
       if (ev.button == options.button) {
         updateDrag(ev);
@@ -706,7 +717,7 @@ ScrollbarAnywhere = (function() {
       ev.preventDefault()
     }
   }
-  
+
   return {
     init: function() {
       addEventListener("mousedown",     onMouseDown,   true)
@@ -716,7 +727,7 @@ ScrollbarAnywhere = (function() {
       addEventListener("contextmenu",   onContextMenu, true)
     }
   }
-  
+
 })()
 
 ScrollbarAnywhere.init()
