@@ -175,7 +175,7 @@ ScrollbarAnywhere = (function() {
     return arguments.callee(e.parentNode)
   }
 
-  function shouldOverrideLeftButton(element) {
+  function shouldOverrideLeftButton(e) {
     return LBUTTON_OVERRIDE_TAGS.some(function(tag) { return tag == e.tagName; }) || hasRoleButtonAttribute(e);
   }
 
