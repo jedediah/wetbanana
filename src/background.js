@@ -1,6 +1,3 @@
-
-<html><head><script type="text/javascript">
-
 defaultOptions = { "button":    2,
                    "key_shift": false,
                    "key_ctrl":  false,
@@ -62,5 +59,3 @@ chrome.windows.getAll({populate:true}, function(wins) {
   })
 })
 */
-
-</script></head><body></body></html>

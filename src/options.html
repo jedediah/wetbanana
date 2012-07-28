@@ -18,123 +18,17 @@
         width: 200px;
         margin-top: 16px;
       }
-      
+
       a:visited {
       	color: blue;
       }
     </style>
 
     <script src="content.js" type="text/javascript"></script>
-    
-    <script type="text/javascript">
-
-var KEYS = ["shift","ctrl","alt","meta"]
-
-function $(id) { return document.getElementById(id) }
-
-function error(msg) {
-  $('message').innerHTML += '<div style="color:red">'+msg+'</div>'
-}
-
-function clearMessage() {
-  $('message').innerHTML = ''
-}
-
-function save() {
-  var x
-  var o = {}        
-
-  clearMessage()
-  
-  x = $('button').selectedIndex
-  if (x < 0 || x > 2) {
-    error("Somehow, you broke the button field")
-  } else o.button = x
-
-  x = $('scaling').value-0
-  if (isNaN(x)) {
-    error("Scaling must be a number")
-  } else o.scaling = x / 100
-
-  x = $('speed').value-0
-  if (isNaN(x) || x < 0) {
-    error("Top speed must be a positive number or zero")
-  } else o.speed = x
-
-  x = $('friction').value-0
-  if (isNaN(x) || x < 0) {
-    error("Friction must be a positive number")
-  } else o.friction = x
-
-  for (var i = 0; i < KEYS.length; i++) {
-    o['key_'+KEYS[i]] = $('key_'+KEYS[i]).checked
-  }
-
-  o.cursor = $('cursor').checked
-  o.notext = $('notext').checked
-  o.grab_and_drag = $('grab_and_drag').checked
-  o.debug = $('debug').checked
-
-  chrome.extension.getBackgroundPage().saveOptions(o)
-}
-
-function load() {
-  var o = chrome.extension.getBackgroundPage().loadOptions()
-
-  $('button').selectedIndex = o.button
-
-  for (var i = 0; i < KEYS.length; i++) {
-    $('key_'+KEYS[i]).checked = (o['key_'+KEYS[i]]+"" == "true")
-  }
-
-  $('scaling').value  = o.scaling * 100
-  $('speed').value    = o.speed
-  $('friction').value = o.friction
-
-  $('cursor').checked = (o.cursor == "true")
-  $('notext').checked = (o.notext == "true")
-  $('grab_and_drag').checked = (o.grab_and_drag == "true")
-  $('debug').checked = (o.debug == "true")
-}
-
-var updateTimeoutId
-
-function onUpdate(ev) {
-  if (updateTimeoutId != null) clearTimeout(updateTimeoutId)
-  updateTimeoutId = setTimeout(save,200)
-
-  $('windows_middle_warning').style.display =
-    ($('button').selectedIndex == 1 &&
-     navigator.userAgent.search(/Windows/) != -1 &&
-     navigator.userAgent.search(/Chrome\/[012345]\./) != -1) ? 'block' : 'none'
-}
-
-function scrollToTop() { window.scrollTo(0,0) }
-
-
-document.addEventListener('load',function(ev) {
-  ['button','cursor','notext','debug', 'grab_and_drag'].forEach(function(id) {
-    $(id).addEventListener('change',onUpdate,false)
-  })
-  
-  KEYS.forEach(function(key) {
-    $('key_'+key).addEventListener('change',onUpdate,false)
-  })
-  
-  ;['scaling','speed','friction'].forEach(function(id) {
-    $(id).addEventListener('change',onUpdate,true)
-    $(id).addEventListener('keydown',onUpdate,true)
-    $(id).addEventListener('mousedown',onUpdate,true)
-    $(id).addEventListener('blur',onUpdate,true)
-  })
-},true)
-
-document.addEventListener('unload',save,true)
-
-    </script>
+    <script src="options.js" type="text/javascript"></script>
 
   </head>
-  <body onload="load()">
+  <body>
     <center>
       <a name="top"></a>
       <table border="0" cellspacing="16" style="width:600px">
@@ -150,13 +44,13 @@ document.addEventListener('unload',save,true)
               <option>Middle</option>
               <option>Right</option>
             </select>
-            
+
             <div id="windows_middle_warning" class="tip" style="display: none">
                 WARNING: The middle button may not work on Windows due to a
                 <a href="http://code.google.com/p/chromium/issues/detail?id=17234">bug</a>
                 in the browser, which will be fixed in Chrome 5.
             </div>
-            
+
           </td>
         </tr>
 
@@ -199,13 +93,13 @@ document.addEventListener('unload',save,true)
         <tr>
           <td align="right">
             <h2>Grab and drag</h2>
-            Grab-and-drag style scrolling will be enabled instead of the scrollbar anywhere style. 
+            Grab-and-drag style scrolling will be enabled instead of the scrollbar anywhere style.
           </td>
           <td>
             <label for="grab_and_drag"><input id="grab_and_drag" type="checkbox"/> Use Grab-and-drag style scrolling</label><br/>
           </td>
         </tr>
-        
+
         <tr>
           <td align="right">
             <h2>Scaling</h2>
@@ -215,7 +109,7 @@ document.addEventListener('unload',save,true)
             <input id="scaling" type="text" style="width:60px" /> <sub>% of original scroll speed</sub>
           </td>
         </tr>
-        
+
 
         <tr>
           <td align="right">
@@ -255,24 +149,24 @@ document.addEventListener('unload',save,true)
         <br/> Based on <a href="https://chrome.google.com/extensions/detail/ljecomdaijmibecakcpjadigpfkollbh">Wet Banana</a> by Jedediah Smith
         <br/> Inspired by <a href="http://pagesperso-orange.fr/marc.boullet/ext/extensions-en.html">Scrollbar Anywhere</a> for Firefox by Marc Boullet
       </p>
-      
+
       <i>Test your settings by dragging this page</i><br/>
       <img src="down.png" style="margin: 0 auto;"/>
-      
-      
-      <div class="backtotop"><a class="backtotop" href="javascript:scrollToTop()"><img src="up.png"/><br/><br/>Back to the Top</a></div>
-      <div class="backtotop"><a class="backtotop" href="javascript:scrollToTop()"><img src="up.png"/><br/><br/>Back to the Top</a></div>
-      <div class="backtotop"><a class="backtotop" href="javascript:scrollToTop()"><img src="up.png"/><br/><br/>Back to the Top</a></div>
-      <div class="backtotop"><a class="backtotop" href="javascript:scrollToTop()"><img src="up.png"/><br/><br/>Back to the Top</a></div>
-      <div class="backtotop"><a class="backtotop" href="javascript:scrollToTop()"><img src="up.png"/><br/><br/>Back to the Top</a></div>
-      <div class="backtotop"><a class="backtotop" href="javascript:scrollToTop()"><img src="up.png"/><br/><br/>Back to the Top</a></div>
-      <div class="backtotop"><a class="backtotop" href="javascript:scrollToTop()"><img src="up.png"/><br/><br/>Back to the Top</a></div>
-      <div class="backtotop"><a class="backtotop" href="javascript:scrollToTop()"><img src="up.png"/><br/><br/>Back to the Top</a></div>
-      <div class="backtotop"><a class="backtotop" href="javascript:scrollToTop()"><img src="up.png"/><br/><br/>Back to the Top</a></div>
-      <div class="backtotop"><a class="backtotop" href="javascript:scrollToTop()"><img src="up.png"/><br/><br/>Back to the Top</a></div>
-      <div class="backtotop"><a class="backtotop" href="javascript:scrollToTop()"><img src="up.png"/><br/><br/>Back to the Top</a></div>
-      <div class="backtotop"><a class="backtotop" href="javascript:scrollToTop()"><img src="up.png"/><br/><br/>Back to the Top</a></div>
+
+
+      <div class="backtotop"><a href="#"><img src="up.png"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a href="#"><img src="up.png"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a href="#"><img src="up.png"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a href="#"><img src="up.png"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a href="#"><img src="up.png"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a href="#"><img src="up.png"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a href="#"><img src="up.png"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a href="#"><img src="up.png"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a href="#"><img src="up.png"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a href="#"><img src="up.png"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a href="#"><img src="up.png"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a href="#"><img src="up.png"/><br/><br/>Back to the Top</a></div>
     </center>
   </body>
 </html>
-      
+

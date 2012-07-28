@@ -1,6 +1,6 @@
 {
   "name": "Scrollbar Anywhere",
-  "version": "2.2",
+  "version": "2.3",
   "description": "Click and drag anywhere to scroll the page.",
   "icons": {
     "128": "icon128.png",
@@ -21,6 +21,9 @@
       "run_at": "document_start"
     }
   ],
-  "background_page": "background.html",
-  "options_page": "options.html"
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "options_page": "options.html",
+  "manifest_version": 2
 }
