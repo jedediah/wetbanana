@@ -5,4 +5,4 @@ An extension for Google Chrome that makes it possible to to scroll pages as if t
 
 If you want grab-and-drag style scrolling, just set it up in the options.
 
-The extension is based on (forked from) the Wet Banana extension and inspired by Scrollbar Anywhere for Firefox.
+The extension is based on the [Wet Banana extension](https://github.com/jedediah/wetbanana) and inspired by Scrollbar Anywhere for Firefox.
