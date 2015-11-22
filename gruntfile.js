@@ -5,6 +5,9 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     manifest: grunt.file.readJSON('src/manifest.json'),
+    clean: {
+      build: ['build/']
+    },
     zip: {
       distrtibution: {
         src: ['src/**/*'],
@@ -15,6 +18,6 @@ module.exports = function(grunt) {
 
   grunt.registerTask('default', ['build']);
 
-  grunt.registerTask('build', ['zip']);
+  grunt.registerTask('build', ['clean', 'zip']);
 
 };
