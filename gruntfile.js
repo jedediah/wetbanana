@@ -6,12 +6,15 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
     manifest: grunt.file.readJSON('src/manifest.json'),
     zip: {
-      'build/ScrollbarAnywhere-<%= manifest.version %>.zip': ['src/**/*']
+      distrtibution: {
+        src: ['src/**/*'],
+        dest: 'build/ScrollbarAnywhere-<%= manifest.version %>.zip'
+      }
     }
   });
 
   grunt.registerTask('default', []);
- 
+
   grunt.registerTask('build', ['zip']);
 
 };
