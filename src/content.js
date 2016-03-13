@@ -672,7 +672,7 @@ ScrollbarAnywhere = (function() {
       debug("unclick, no drag")
       Clipboard.unblockPaste()
       ScrollFix.hide()
-      if (ev.button == 0) getSelection().collapse()
+      if (ev.button == 0 && document.firstChild) getSelection().collapse(document.firstChild)
       if (document.activeElement) document.activeElement.blur()
       if (ev.target) ev.target.focus()
       if (ev.button == options.button) activity = STOP
