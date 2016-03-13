@@ -10,6 +10,12 @@ The extension is based on the [Wet Banana extension](https://github.com/jedediah
 Change Log
 ----------
 
+Changes in 2.7:
+- Fixed gliding in Chrome v49+.
+
+Changes in 2.6:
+- Allow the extension to be used on file paths.
+
 Changes in 2.5:
 - Changed mouse cursor to grabbing when dragging. Thanks to [koMah](https://github.com/koMah).
 
