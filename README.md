@@ -10,6 +10,9 @@ The extension is based on the [Wet Banana extension](https://github.com/jedediah
 Change Log
 ----------
 
+Changes in 2.8:
+- Fixed a bug where left-clicking would leave dragging enabled.
+
 Changes in 2.7:
 - Fixed gliding in Chrome v49+.
 
