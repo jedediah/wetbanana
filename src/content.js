@@ -506,7 +506,7 @@ ScrollbarAnywhere = (function() {
   function updateGlide() {
     if (activity == GLIDE) {
       debug("glide update");
-      var moving = Motion.glide(new Date().getTime());
+      var moving = Motion.glide(performance.now());
       moving = Scroll.move(vsub(Motion.getPosition(),mouseOrigin)) && moving;
       if (moving) {
         setTimeout(updateGlide,TIME_STEP);
