@@ -22,7 +22,7 @@ ScrollbarAnywhere = (function() {
 
   function debug() {
     if (options.debug) {
-      console.debug.apply(console,["WB:"].concat(Array.prototype.slice.call(arguments)))
+      console.debug.apply(console,["SA:"].concat(Array.prototype.slice.call(arguments)))
     }
   }
 
