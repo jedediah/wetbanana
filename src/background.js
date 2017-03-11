@@ -27,7 +27,7 @@ clients = {}
 
 chrome.extension.onConnect.addListener(function(port) {
   port.postMessage({ saveOptions: localStorage })
-  var id = port.sender.tab.id
+  var id = port.sender.tab.id + ":" + port.sender.frameId
   console.log("connect: "+id)
   clients[id] = port
   port.onDisconnect.addListener(function() {
