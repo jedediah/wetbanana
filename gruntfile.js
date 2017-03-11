@@ -11,7 +11,7 @@ module.exports = function(grunt) {
     zip: {
       distrtibution: {
         src: ['src/**/*'],
-        dest: 'build/ScrollbarAnywhere-<%= manifest.version %>.zip'
+        dest: 'build/scrollbar_anywhere-<%= manifest.version %>.zip'
       }
     }
   });
