@@ -10,6 +10,9 @@ The extension is based on the [Wet Banana extension](https://github.com/jedediah
 Change Log
 ----------
 
+### 2.11
+- Fixed a bug where settings in open multi-frame tabs were not updated.
+
 ### 2.10
 - Fixed a bug where settings in open tabs were not updated.
 
