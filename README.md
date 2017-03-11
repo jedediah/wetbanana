@@ -10,29 +10,29 @@ The extension is based on the [Wet Banana extension](https://github.com/jedediah
 Change Log
 ----------
 
-Changes in 2.10:
+### 2.10
 - Fixed a bug where settings in open tabs were not updated.
 
-Changes in 2.9:
+### 2.9
 - Fixed a bug where left-clicking would leave dragging enabled on some web pages.
 
-Changes in 2.8:
+### 2.8
 - Fixed a bug where left-clicking would leave dragging enabled.
 
-Changes in 2.7:
+### 2.7
 - Fixed gliding in Chrome v49+.
 
-Changes in 2.6:
+### 2.6
 - Allow the extension to be used on file paths.
 
-Changes in 2.5:
+### 2.5
 - Changed mouse cursor to grabbing when dragging. Thanks to [koMah](https://github.com/koMah).
 
-Changes in 2.4:
+### 2.4
 - Fixed compatibility issues related to Change Colors extension
 
-Changes in 2.3:
+### 2.3
 - Compatibility fixes for future versions of Chrome.
 
-Changes in 2.2:
+### 2.2
 - Now enables clicks on gmail buttons (and similar) when scrolling with left mouse button.
