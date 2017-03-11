@@ -11,6 +11,7 @@ Change Log
 ----------
 
 ### 2.11
+- Add a blacklist, allowing users to disable scrolling on certain domains.
 - Fixed a bug where settings in open multi-frame tabs were not updated.
 
 ### 2.10
