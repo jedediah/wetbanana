@@ -40,6 +40,16 @@ function save() {
     o['key_'+KEYS[i]] = $('key_'+KEYS[i]).checked
   }
 
+  x = $('blacklist').value
+  var hosts = x.split('\n')
+  for (var i = hosts.length - 1; i >= 0; i--) {
+    var host = hosts[i].trim();
+    if (!host.match(/^[a-z0-9-.]*$/)) {
+      error('The blacklisted domain name "' + host + '" is not valid')
+    }
+  }
+  o.blacklist = x
+
   o.cursor = $('cursor').checked
   o.notext = $('notext').checked
   o.grab_and_drag = $('grab_and_drag').checked
@@ -60,6 +70,7 @@ function load() {
   $('scaling').value  = o.scaling * 100
   $('speed').value    = o.speed
   $('friction').value = o.friction
+  $('blacklist').value = o.blacklist
 
   $('cursor').checked = (o.cursor == "true")
   $('notext').checked = (o.notext == "true")
@@ -89,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function(ev) {
     $('key_'+key).addEventListener('change',onUpdate,false)
   })
 
-  ;['scaling','speed','friction'].forEach(function(id) {
+  ;['scaling','speed','friction','blacklist'].forEach(function(id) {
     $(id).addEventListener('change',onUpdate,true)
     $(id).addEventListener('keydown',onUpdate,true)
     $(id).addEventListener('mousedown',onUpdate,true)

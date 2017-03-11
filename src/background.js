@@ -10,6 +10,7 @@ defaultOptions = { "button":    2,
                    "notext":    false,
                    "grab_and_drag": false,
                    "debug":     false,
+                   "blacklist": "",
                  }
 
 for (var k in defaultOptions)

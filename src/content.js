@@ -3,7 +3,7 @@ ScrollbarAnywhere = (function() {
 
   // === Options ===
 
-  var options = {debug:true}
+  var options = {debug:true, enabled:false}
 
   var port = chrome.extension.connect()
   port.onMessage.addListener(function(msg) {
@@ -13,10 +13,22 @@ ScrollbarAnywhere = (function() {
       options.notext = (options.notext == "true")
       options.grab_and_drag = (options.grab_and_drag == "true")
       options.debug = (options.debug == "true")
+      options.enabled = isEnabled(options.blacklist)
       debug("saveOptions: ",options)
     }
   })
 
+  function isEnabled(blacklist) {
+    var blacklistedHosts = blacklist.split('\n');
+    var hostname = document.location.hostname;
+    for (var i = blacklistedHosts.length - 1; i >= 0; i--) {
+      var blacklistedHost = blacklistedHosts[i].trim();
+      if (hostname === blacklistedHost || hostname.endsWith('.' + blacklistedHost)) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   // === Debuggering ===
 
@@ -563,6 +575,11 @@ ScrollbarAnywhere = (function() {
 
   function onMouseDown(ev) {
     blockContextMenu = false
+
+    if (!options.enabled) {
+      debug("blacklisted domain, ignoring");
+      return true;
+    }
 
     switch (activity) {
 
