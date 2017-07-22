@@ -654,7 +654,7 @@ ScrollbarAnywhere = (function() {
     case STOP: break
 
     case CLICK:
-      if (ev.button == options.button) {
+      if (ev.buttons == buttonToMouseMoveButtons(options.button)) {
         if (options.button == RBUTTON) blockContextMenu = true
         if (showScrollFix) {
           ScrollFix.show();
@@ -666,7 +666,7 @@ ScrollbarAnywhere = (function() {
       break
 
     case DRAG:
-      if (ev.button == options.button) {
+      if (ev.buttons == buttonToMouseMoveButtons(options.button)) {
         updateDrag(ev);
         ev.preventDefault();
       }
@@ -749,7 +749,13 @@ ScrollbarAnywhere = (function() {
     }
   }
 
+  function buttonToMouseMoveButtons(button) {
+    if (button == LBUTTON) return 1
+    if (button == MBUTTON) return 4
+    if (button == RBUTTON) return 2
+    return 0
+  }
+
 })()
 
 ScrollbarAnywhere.init()
-
