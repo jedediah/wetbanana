@@ -11,10 +11,10 @@ Change Log
 ----------
 
 ### 2.13
-- Fix scrolling in Chrome v61+.
+- Fix scrolling in Chrome v61+, by using `document.scrollingElement` as the outmost scrolling element, instead of `document.body`.
 
 ### 2.12
-- Fix scrolling in Chrome v60+.
+- Fix scrolling in Chrome v60+, by looking at the `buttons` property of the `mousemove` event.
 
 ### 2.11
 - Add a blacklist, allowing users to disable scrolling on certain domains.
