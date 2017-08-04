@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html>
   <head>
     <title>Scrollbar Anywhere</title>
@@ -6,11 +6,34 @@
     <style>
       body {
         font-family: sans-serif;
+        font-size: 10pt;
+      }
+
+      #settings {
+        font-size: 12pt;
+        width: 600px;
+        text-align: left;
+      }
+
+      #message {
+        height: 24pt;
       }
 
       h2 { margin: 0 }
 
       div.backtotop { margin: 400px auto 0; }
+
+      .centered {
+        margin: auto;
+      }
+
+      .centered-text {
+        text-align: center;
+      }
+
+      .setting_description {
+        text-align: right;
+      }
 
       .tip {
         font-style: italic;
@@ -29,12 +52,12 @@
 
   </head>
   <body>
-    <center>
-      <a name="top"></a>
-      <table border="0" cellspacing="16" style="width:600px">
+    <div class="centered-text">
+      <a id="top"></a>
+      <table id="settings" class="centered" style="border: none; border-spacing: 16px;">
 
         <tr>
-          <td align="right">
+          <td class="setting_description">
             <h2>Button</h2>
             Which button will you hold down to drag?
           </td>
@@ -55,12 +78,12 @@
         </tr>
 
         <tr>
-          <td align="right">
+          <td class="setting_description">
            <h2>Keys</h2>
            Which extra keys will you hold down?
           </td>
           <td>
-            <table border="0">
+            <table style="border: none">
             <tr>
               <td style="width:100px">
                   <input id="key_shift" type="checkbox" /> <label for="key_shift">Shift</label></td>
@@ -91,7 +114,7 @@
         </tr>
 
         <tr>
-          <td align="right">
+          <td class="setting_description">
             <h2>Grab and drag</h2>
             Grab-and-drag style scrolling will be enabled instead of the scrollbar anywhere style.
           </td>
@@ -101,7 +124,7 @@
         </tr>
 
         <tr>
-          <td align="right">
+          <td class="setting_description">
             <h2>Scaling</h2>
             Mouse motion will be magnified by this factor. A negative number will invert scrolling. 100 is default.
           </td>
@@ -112,7 +135,7 @@
 
 
         <tr>
-          <td align="right">
+          <td class="setting_description">
             <h2>Top Speed</h2>
             The maximum speed at which the page will glide after you release it. Enter 0 to disable gliding.
           </td>
@@ -122,7 +145,7 @@
         </tr>
 
         <tr>
-          <td align="right">
+          <td class="setting_description">
             <h2>Friction</h2>
             How quickly the page will come to a stop when gliding.
           </td>
@@ -132,7 +155,7 @@
         </tr>
 
         <tr>
-          <td align="right">
+          <td class="setting_description">
             <h2>Blacklist</h2>
             Disable this extension on the configured domains and all of their subdomains.
           </td>
@@ -148,7 +171,7 @@
         </tr>
 
         <tr>
-          <td colspan="2" id="message" align="center" height="24"></td>
+          <td colspan="2" id="message" class="centered-text"></td>
         </tr>
 
       </table>
@@ -162,22 +185,21 @@
       </p>
 
       <i>Test your settings by dragging this page</i><br/>
-      <img src="down.png" style="margin: 0 auto;"/>
+      <img src="down.png" alt="Down arrow" style="margin: 0 auto;"/>
 
 
-      <div class="backtotop"><a href="#"><img src="up.png"/><br/><br/>Back to the Top</a></div>
-      <div class="backtotop"><a href="#"><img src="up.png"/><br/><br/>Back to the Top</a></div>
-      <div class="backtotop"><a href="#"><img src="up.png"/><br/><br/>Back to the Top</a></div>
-      <div class="backtotop"><a href="#"><img src="up.png"/><br/><br/>Back to the Top</a></div>
-      <div class="backtotop"><a href="#"><img src="up.png"/><br/><br/>Back to the Top</a></div>
-      <div class="backtotop"><a href="#"><img src="up.png"/><br/><br/>Back to the Top</a></div>
-      <div class="backtotop"><a href="#"><img src="up.png"/><br/><br/>Back to the Top</a></div>
-      <div class="backtotop"><a href="#"><img src="up.png"/><br/><br/>Back to the Top</a></div>
-      <div class="backtotop"><a href="#"><img src="up.png"/><br/><br/>Back to the Top</a></div>
-      <div class="backtotop"><a href="#"><img src="up.png"/><br/><br/>Back to the Top</a></div>
-      <div class="backtotop"><a href="#"><img src="up.png"/><br/><br/>Back to the Top</a></div>
-      <div class="backtotop"><a href="#"><img src="up.png"/><br/><br/>Back to the Top</a></div>
-    </center>
+      <div class="backtotop"><a href="#"><img src="up.png" alt="Up arrow"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a href="#"><img src="up.png" alt="Up arrow"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a href="#"><img src="up.png" alt="Up arrow"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a href="#"><img src="up.png" alt="Up arrow"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a href="#"><img src="up.png" alt="Up arrow"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a href="#"><img src="up.png" alt="Up arrow"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a href="#"><img src="up.png" alt="Up arrow"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a href="#"><img src="up.png" alt="Up arrow"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a href="#"><img src="up.png" alt="Up arrow"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a href="#"><img src="up.png" alt="Up arrow"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a href="#"><img src="up.png" alt="Up arrow"/><br/><br/>Back to the Top</a></div>
+      <div class="backtotop"><a href="#"><img src="up.png" alt="Up arrow"/><br/><br/>Back to the Top</a></div>
+    </div>
   </body>
 </html>
-
