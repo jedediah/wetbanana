@@ -122,8 +122,8 @@ ScrollbarAnywhere = (function() {
   // The body element is treated separately since the visible size is
   // fetched differently depending on the doctype.
   function isOverScrollbar(ev) {
-    var t = ev.target == document.documentElement ? document.body : ev.target;
-    if (t == document.body) {
+    var t = ev.target == document.documentElement ? document.scrollingElement : ev.target;
+    if (t == document.scrollingElement) {
       var d = document.documentElement;
       var clientWidth;
       var clientHeight;
@@ -167,8 +167,8 @@ ScrollbarAnywhere = (function() {
 
   // Return the first ancestor (or the element itself) that is scrollable
   function findInnermostScrollable(e) {
-    if (e == document.documentElement) return document.body
-    if (e == null || e == document.body || isScrollable(e)) {
+    if (e == document.documentElement) return document.scrollingElement
+    if (e == null || e == document.scrollingElement || isScrollable(e)) {
       return e
     } else {
       return arguments.callee(e.parentNode)
@@ -432,7 +432,7 @@ ScrollbarAnywhere = (function() {
 
     // Return the size of the element as it appears in parent's layout
     function getViewportSize(el) {
-      if (el == document.body) {
+      if (el == document.scrollingElement) {
         return [window.innerWidth, window.innerHeight]
       } else {
         return [el.clientWidth, el.clientHeight]
