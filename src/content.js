@@ -439,10 +439,6 @@ ScrollbarAnywhere = (function() {
       }
     }
 
-    function getScrollEventSource(el) {
-      return el == document.body ? document : el
-    }
-
     // Start dragging given element
     function start(el) {
       if (element) stop()
