@@ -10,6 +10,9 @@ The extension is based on the [Wet Banana extension](https://github.com/jedediah
 Change Log
 ----------
 
+### 2.13
+- Fix scrolling in Chrome v61+.
+
 ### 2.12
 - Fix scrolling in Chrome v60+.
 
