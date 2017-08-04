@@ -10,6 +10,9 @@ The extension is based on the [Wet Banana extension](https://github.com/jedediah
 Change Log
 ----------
 
+### 2.12
+- Fix scrolling in Chrome v60+.
+
 ### 2.11
 - Add a blacklist, allowing users to disable scrolling on certain domains.
 - Fixed a bug where settings in open multi-frame tabs were not updated.
