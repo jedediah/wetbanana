@@ -167,7 +167,7 @@ ScrollbarAnywhere = (function() {
 
   // Return the first ancestor (or the element itself) that is scrollable
   function findInnermostScrollable(e) {
-    if (e == document.documentElement) return document.scrollingElement
+    if (e == document.documentElement || e == document.body) return document.scrollingElement
     if (e == null || e == document.scrollingElement || isScrollable(e)) {
       return e
     } else {
