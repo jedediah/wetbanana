@@ -10,6 +10,9 @@ The extension is based on the [Wet Banana extension](https://github.com/jedediah
 Change Log
 ----------
 
+### 2.14
+- Fix scrolling on some sites in Chrome v61+, by using `document.scrollingElement` as the outmost scrolling element, instead of `document.body`, even if `document.body` seems scrollable.
+
 ### 2.13
 - Fix scrolling in Chrome v61+, by using `document.scrollingElement` as the outmost scrolling element, instead of `document.body`.
 
