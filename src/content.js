@@ -579,7 +579,6 @@ ScrollbarAnywhere = (function() {
     }
 
     if (!options.browser_enabled) {
-    // if (localStorage['enabled'] != "true") {
       debug("browserAction is disabled, ignoring")
       return true;
     }
