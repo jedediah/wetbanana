@@ -57,6 +57,7 @@ chrome.browserAction.onClicked.addListener(function(tab) {
     localStorage['browser_enabled'] = "true"
     chrome.browserAction.setIcon({path:"icon16.png"})
   }
+  saveOptions({o:'browser_enabled'})
 })
 
 // Inject content script into all existing tabs (doesn't work)
