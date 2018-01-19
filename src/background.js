@@ -11,7 +11,7 @@ defaultOptions = { "button":    2,
                    "grab_and_drag": false,
                    "debug":     false,
                    "blacklist": "",
-                   "enabled":   true, // browserAction.onClicked()
+                   "browser_enabled": true,
                  }
 
 for (var k in defaultOptions)
@@ -49,12 +49,12 @@ function saveOptions(o) {
 }
 
 chrome.browserAction.onClicked.addListener(function(tab) {
-  if (localStorage['enabled'] == "true") {
-    localStorage['enabled'] = "false"
+  if (localStorage['browser_enabled'] == "true") {
+    localStorage['browser_enabled'] = "false"
     chrome.browserAction.setIcon({path:"icon16dis.png"})
   }
   else {
-    localStorage['enabled'] = "true"
+    localStorage['browser_enabled'] = "true"
     chrome.browserAction.setIcon({path:"icon16.png"})
   }
 })
