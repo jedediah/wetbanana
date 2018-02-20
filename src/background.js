@@ -11,6 +11,7 @@ defaultOptions = { "button":    2,
                    "grab_and_drag": false,
                    "debug":     false,
                    "blacklist": "",
+                   "browser_enabled": true,
                  }
 
 for (var k in defaultOptions)
@@ -46,6 +47,18 @@ function saveOptions(o) {
     clients[id].postMessage({ saveOptions: localStorage })
   }
 }
+
+chrome.browserAction.onClicked.addListener(function(tab) {
+  if (localStorage['browser_enabled'] == "true") {
+    localStorage['browser_enabled'] = "false"
+    chrome.browserAction.setIcon({path:"icon16dis.png"})
+  }
+  else {
+    localStorage['browser_enabled'] = "true"
+    chrome.browserAction.setIcon({path:"icon16.png"})
+  }
+  saveOptions({o:'browser_enabled'})
+})
 
 // Inject content script into all existing tabs (doesn't work)
 // This functionality requires

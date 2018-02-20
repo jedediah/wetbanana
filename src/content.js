@@ -14,6 +14,7 @@ ScrollbarAnywhere = (function() {
       options.grab_and_drag = (options.grab_and_drag == "true")
       options.debug = (options.debug == "true")
       options.enabled = isEnabled(options.blacklist)
+      options.browser_enabled = (options.browser_enabled == "true")
       debug("saveOptions: ",options)
     }
   })
@@ -574,6 +575,11 @@ ScrollbarAnywhere = (function() {
 
     if (!options.enabled) {
       debug("blacklisted domain, ignoring");
+      return true;
+    }
+
+    if (!options.browser_enabled) {
+      debug("browserAction is disabled, ignoring")
       return true;
     }
 
