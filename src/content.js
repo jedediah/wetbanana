@@ -20,6 +20,9 @@ ScrollbarAnywhere = (function() {
   })
 
   function isEnabled(blacklist) {
+    if (!blacklist) {
+      return true;
+    }
     var blacklistedHosts = blacklist.split('\n');
     var hostname = document.location.hostname;
     for (var i = blacklistedHosts.length - 1; i >= 0; i--) {
