@@ -10,6 +10,9 @@ The extension is based on the [Wet Banana extension](https://github.com/jedediah
 Change Log
 ----------
 
+### 2.17
+- Prevent the configured extra keys to interfere with scrolling.
+
 ### 2.16
 - Stop gliding when a key is pressed or the mouse wheel is scrolled.
 - Fix a bug where the default mouse click actions were incorrectly prevented.

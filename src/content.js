@@ -511,6 +511,7 @@ var ScrollbarAnywhere = (function() {
 
   const LBUTTON=0, MBUTTON=1, RBUTTON=2
   const KEYS = ["shift","ctrl","alt","meta"]
+  const KEYS_KEY_CODES = [16,17,18,91,92]
   const TIME_STEP = 10
 
   const STOP=0, CLICK=1, DRAG=2, GLIDE=3
@@ -766,8 +767,10 @@ var ScrollbarAnywhere = (function() {
       case DRAG: break
 
       case GLIDE:
-        debug("key pressed or wheel scrolled while gliding")
-        stopGlide(ev)
+        if (!KEYS_KEY_CODES.includes(ev.keyCode)) {
+          debug("key pressed or wheel scrolled while gliding")
+          stopGlide(ev)
+        }
         break
 
       default:
