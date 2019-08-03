@@ -250,6 +250,7 @@ var ScrollbarAnywhere = (function() {
   // === Scrollfix hack ===
   var ScrollFix = (function(){
     var scrollFixElement = null;
+    var showingScrollFix = false;
 
     function createScrollFix() {
       var element = document.createElement('div');
@@ -269,12 +270,18 @@ var ScrollbarAnywhere = (function() {
       if (scrollFixElement === null) {
         scrollFixElement = createScrollFix();
       }
-      document.body.appendChild(scrollFixElement);
+      if (!showingScrollFix) {
+        debug("showing scrollfix")
+        document.body.appendChild(scrollFixElement);
+        showingScrollFix = true;
+      }
     }
 
     function hide() {
-      if (scrollFixElement !== null && scrollFixElement.parentNode !== null) {
+      if (showingScrollFix && scrollFixElement !== null && scrollFixElement.parentNode !== null) {
+        debug("hiding scrollfix")
         scrollFixElement.parentNode.removeChild(scrollFixElement);
+        showingScrollFix = false;
       }
     }
 
@@ -512,7 +519,6 @@ var ScrollbarAnywhere = (function() {
 
   var activity = STOP
   var blockContextMenu = false
-  var showScrollFix = false
   var mouseOrigin = null
   var dragElement = null
 
@@ -641,7 +647,6 @@ var ScrollbarAnywhere = (function() {
           (navigator.platform.match(/Mac/) || navigator.platform.match(/Linux/))) {
         blockContextMenu = true;
       }
-      showScrollFix = true
       break
 
     default:
@@ -666,10 +671,7 @@ var ScrollbarAnywhere = (function() {
           break
         }
         if (options.button == RBUTTON) blockContextMenu = true
-        if (showScrollFix) {
-          ScrollFix.show();
-          showScrollFix = false;
-        }
+        ScrollFix.show();
         startDrag(ev)
         ev.preventDefault()
       }
