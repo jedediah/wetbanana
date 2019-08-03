@@ -660,6 +660,10 @@ ScrollbarAnywhere = (function() {
 
     case CLICK:
       if (ev.buttons == buttonToMouseMoveButtons(options.button)) {
+        if (positionsWithinDistance(mouseOrigin, [ev.clientX, ev.clientY], 0)) {
+          debug("ignore, short drag")
+          break
+        }
         if (options.button == RBUTTON) blockContextMenu = true
         if (showScrollFix) {
           ScrollFix.show();
@@ -742,6 +746,11 @@ ScrollbarAnywhere = (function() {
       debug("blocking context menu")
       ev.preventDefault()
     }
+  }
+
+  function positionsWithinDistance(position1, position2, maxDistance) {
+    var distance = vmag(vsub(position1, position2))
+    return distance >= -maxDistance && distance <= maxDistance
   }
 
   return {
