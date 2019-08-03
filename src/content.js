@@ -756,13 +756,35 @@ var ScrollbarAnywhere = (function() {
     return distance >= -maxDistance && distance <= maxDistance
   }
 
+  function onAbortingAction(ev) {
+    switch (activity) {
+
+      case STOP: break
+
+      case CLICK: break
+
+      case DRAG: break
+
+      case GLIDE:
+        debug("key pressed or wheel scrolled while gliding")
+        stopGlide(ev)
+        break
+
+      default:
+        debug("WARNING: unknown state: "+activity)
+        break
+      }
+  }
+
   return {
     init: function() {
-      addEventListener("mousedown",     onMouseDown,   true)
-      addEventListener("mouseup",       onMouseUp,     true)
-      addEventListener("mousemove",     onMouseMove,   true)
-      addEventListener("mouseout",      onMouseOut,    true)
-      addEventListener("contextmenu",   onContextMenu, true)
+      addEventListener("mousedown", onMouseDown, true)
+      addEventListener("mouseup", onMouseUp, true)
+      addEventListener("mousemove", onMouseMove, true)
+      addEventListener("mouseout", onMouseOut, true)
+      addEventListener("contextmenu", onContextMenu, true)
+      addEventListener("keydown", onAbortingAction, true)
+      addEventListener("wheel", onAbortingAction, true)
     }
   }
 
