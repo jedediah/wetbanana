@@ -1,5 +1,5 @@
 
-ScrollbarAnywhere = (function() {
+var ScrollbarAnywhere = (function() {
 
   // === Options ===
 
@@ -426,7 +426,7 @@ ScrollbarAnywhere = (function() {
   })()
 
 
-  Scroll = (function() {
+  var Scroll = (function() {
     var scrolling = false
     var element
     var scrollOrigin
