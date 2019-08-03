@@ -252,21 +252,22 @@ ScrollbarAnywhere = (function() {
     var scrollFixElement = null;
 
     function createScrollFix() {
-      scrollFixElement = document.createElement('div');
-      scrollFixElement.setAttribute('style', 'background: transparent none !important');
-      scrollFixElement.style.position = 'fixed';
-      scrollFixElement.style.top=0;
-      scrollFixElement.style.right=0;
-      scrollFixElement.style.bottom=0;
-      scrollFixElement.style.left=0;
-      scrollFixElement.style.zIndex=99999999;
-      scrollFixElement.style.display='block';
-      //scrollFixElement.style.borderRight='5px solid rgba(0,0,0,0.04)';
+      var element = document.createElement('div');
+      element.setAttribute('style', 'background: transparent none !important');
+      element.style.position = 'fixed';
+      element.style.top=0;
+      element.style.right=0;
+      element.style.bottom=0;
+      element.style.left=0;
+      element.style.zIndex=99999999;
+      element.style.display='block';
+      //element.style.borderRight='5px solid rgba(0,0,0,0.04)';
+      return element;
     }
 
     function show() {
       if (scrollFixElement === null) {
-        createScrollFix();
+        scrollFixElement = createScrollFix();
       }
       document.body.appendChild(scrollFixElement);
     }
